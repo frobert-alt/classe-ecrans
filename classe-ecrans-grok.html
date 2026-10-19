@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Classe Écrans – Vue enseignant</title>
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --success: #22c55e;
+      --danger: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+    .container { max-width: 1400px; margin: 0 auto; padding: 1.5rem; }
+    h1 { font-size: 1.75rem; margin-bottom: 0.5rem; }
+    h2 { font-size: 1.25rem; margin-bottom: 1rem; color: var(--muted); }
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: var(--accent-hover); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-success { background: var(--success); }
+    .btn-success:hover { background: #16a34a; }
+    .btn-danger { background: var(--danger); }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-secondary { background: #475569; }
+    .btn-secondary:hover { background: #334155; }
+    input[type="text"] {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      background: #0f172a;
+      color: var(--text);
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+    input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+    .hidden { display: none !important; }
+    .link-box {
+      background: #0f172a;
+      border: 1px dashed #475569;
+      border-radius: 8px;
+      padding: 1rem;
+      word-break: break-all;
+      font-family: monospace;
+      font-size: 0.95rem;
+      margin: 1rem 0;
+      user-select: all;
+    }
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .status::before {
+      content: "";
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+    }
+    .status.online::before { background: var(--success); }
+    .status.waiting::before { background: #eab308; }
+    /* Grille des écrans */
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+    .student-card {
+      background: #0f172a;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 2px solid #334155;
+      transition: border-color 0.2s;
+      position: relative;
+    }
+    .student-card:hover { border-color: var(--accent); }
+    .student-card video {
+      width: 100%;
+      aspect-ratio: 16/10;
+      background: #000;
+      display: block;
+      object-fit: contain;
+    }
+    .student-name {
+      padding: 0.6rem 0.8rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .student-card.fullscreen {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      border-radius: 0;
+      border: none;
+      background: #000;
+    }
+    .student-card.fullscreen video {
+      height: 100vh;
+      aspect-ratio: auto;
+    }
+    .student-card.fullscreen .student-name {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      z-index: 10;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--muted);
+    }
+    .empty-state svg { width: 64px; height: 64px; margin-bottom: 1rem; opacity: 0.5; }
+    .header-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-top: 1rem; }
+    .count-badge {
+      background: var(--accent);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    /* Élève */
+    #student-view .card { max-width: 480px; margin: 2rem auto; }
+    .form-group { margin-bottom: 1rem; }
+    label { display: block; margin-bottom: 0.35rem; font-weight: 500; color: var(--muted); }
+    .alert {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+    }
+    .alert-info { background: #1e3a5f; color: #93c5fd; }
+    .alert-success { background: #14532d; color: #86efac; }
+    .alert-warning { background: #713f12; color: #fde68a; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- ========== VUE ENSEIGNANT ========== -->
+    <div id="teacher-view">
+      <h1>Classe Écrans</h1>
+      <h2>Vue enseignant – regardez tous les écrans de vos élèves</h2>
+
+      <div id="teacher-setup" class="card">
+        <p style="margin-bottom:1rem;color:var(--muted)">
+          Cliquez sur le bouton ci-dessous pour créer votre classe. Vous obtiendrez un lien à envoyer à vos élèves.
+        </p>
+        <button id="btn-create" class="btn">Créer ma classe</button>
+      </div>
+
+      <div id="teacher-room" class="card hidden">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem">
+          <div>
+            <div class="status online" id="teacher-status">Classe ouverte</div>
+            <p style="margin-top:0.5rem;font-size:0.9rem;color:var(--muted)">
+              Élèves connectés : <span class="count-badge" id="student-count">0</span>
+            </p>
+          </div>
+          <div class="header-actions">
+            <button id="btn-copy-link" class="btn btn-secondary">Copier le lien élèves</button>
+            <button id="btn-close-class" class="btn btn-danger">Fermer la classe</button>
+          </div>
+        </div>
+
+        <p style="margin:1rem 0 0.5rem;font-weight:600">Lien à envoyer aux élèves :</p>
+        <div class="link-box" id="share-link"></div>
+        <p style="font-size:0.85rem;color:var(--muted)">
+          Les élèves ouvrent ce lien, entrent leur prénom et nom, puis partagent leur écran.
+        </p>
+      </div>
+
+      <div id="grid-container" class="card hidden">
+        <h3 style="margin-bottom:1rem">Écrans des élèves</h3>
+        <div id="grid">
+          <div class="empty-state" id="empty-state">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <p>En attente des élèves…</p>
+            <p style="font-size:0.9rem;margin-top:0.5rem">Dès qu’un élève partage son écran, il apparaît ici.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== VUE ÉLÈVE ========== -->
+    <div id="student-view" class="hidden">
+      <div class="card">
+        <h1 style="text-align:center;margin-bottom:0.25rem">Rejoindre la classe</h1>
+        <p style="text-align:center;color:var(--muted);margin-bottom:1.5rem">Partagez votre écran avec votre enseignant</p>
+
+        <div id="student-form">
+          <div class="form-group">
+            <label for="firstname">Prénom</label>
+            <input type="text" id="firstname" placeholder="Votre prénom" autocomplete="given-name">
+          </div>
+          <div class="form-group">
+            <label for="lastname">Nom</label>
+            <input type="text" id="lastname" placeholder="Votre nom" autocomplete="family-name">
+          </div>
+          <button id="btn-share" class="btn btn-success" style="width:100%">Partager mon écran</button>
+          <p style="font-size:0.85rem;color:var(--muted);margin-top:1rem;text-align:center">
+            Le navigateur va vous demander la permission de partager votre écran.
+          </p>
+        </div>
+
+        <div id="student-sharing" class="hidden">
+          <div class="alert alert-success">
+            Vous partagez votre écran. Gardez cet onglet ouvert.
+          </div>
+          <p style="text-align:center;margin:1rem 0">
+            <strong id="student-display-name"></strong>
+          </p>
+          <button id="btn-stop-share" class="btn btn-danger" style="width:100%">Arrêter le partage</button>
+        </div>
+
+        <div id="student-error" class="alert alert-warning hidden" style="margin-top:1rem"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========== CONFIG ==========
+    const PEER_CONFIG = {
+      // Utilise le serveur cloud gratuit de PeerJS
+      // Pour plus de fiabilité en production, vous pouvez héberger votre propre PeerServer
+      debug: 1
+    };
+
+    // ========== ÉTAT ==========
+    let peer = null;
+    let currentCalls = new Map(); // peerId -> { call, videoEl, name }
+    let localStream = null;
+    let isTeacher = false;
+    let roomId = null;
+
+    // ========== UTILITAIRES ==========
+    function $(id) { return document.getElementById(id); }
+    function show(el) { el.classList.remove('hidden'); }
+    function hide(el) { el.classList.add('hidden'); }
+
+    function getQueryParam(name) {
+      return new URLSearchParams(window.location.search).get(name);
+    }
+
+    function generateRoomId() {
+      // ID court et lisible
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let id = '';
+      for (let i = 0; i < 6; i++) id += chars[Math.floor(Math.random() * chars.length)];
+      return id;
+    }
+
+    // ========== ENSEIGNANT ==========
+    function startAsTeacher() {
+      isTeacher = true;
+      roomId = generateRoomId();
+
+      peer = new Peer(roomId, PEER_CONFIG);
+
+      peer.on('open', (id) => {
+        console.log('Enseignant prêt, ID:', id);
+        const link = `${window.location.origin}${window.location.pathname}?room=${id}`;
+        $('share-link').textContent = link;
+        hide($('teacher-setup'));
+        show($('teacher-room'));
+        show($('grid-container'));
+      });
+
+      peer.on('call', (call) => {
+        const name = (call.metadata && call.metadata.name) ? call.metadata.name : 'Élève';
+        console.log('Appel reçu de', name, call.peer);
+
+        call.answer(); // Pas de stream en retour
+
+        call.on('stream', (remoteStream) => {
+          addStudentScreen(call.peer, remoteStream, name);
+        });
+
+        call.on('close', () => {
+          removeStudentScreen(call.peer);
+        });
+
+        call.on('error', (err) => {
+          console.error('Erreur appel:', err);
+          removeStudentScreen(call.peer);
+        });
+      });
+
+      peer.on('error', (err) => {
+        console.error('Erreur Peer:', err);
+        alert('Erreur de connexion : ' + err.type + '\nRéessayez de créer la classe.');
+      });
+
+      peer.on('disconnected', () => {
+        console.log('Déconnecté du serveur de signalisation, tentative de reconnexion…');
+        peer.reconnect();
+      });
+    }
+
+    function addStudentScreen(peerId, stream, name) {
+      if (currentCalls.has(peerId)) {
+        // Mettre à jour le stream existant
+        const existing = currentCalls.get(peerId);
+        existing.videoEl.srcObject = stream;
+        return;
+      }
+
+      hide($('empty-state'));
+
+      const card = document.createElement('div');
+      card.className = 'student-card';
+      card.dataset.peerId = peerId;
+
+      const video = document.createElement('video');
+      video.autoplay = true;
+      video.playsInline = true;
+      video.muted = true; // Important pour l'autoplay
+      video.srcObject = stream;
+
+      const nameBar = document.createElement('div');
+      nameBar.className = 'student-name';
+      nameBar.innerHTML = `
+        <span>${escapeHtml(name)}</span>
+        <button class="btn btn-secondary" style="padding:0.3rem 0.6rem;font-size:0.8rem" onclick="toggleFullscreen(this)">Agrandir</button>
+      `;
+
+      card.appendChild(video);
+      card.appendChild(nameBar);
+      $('grid').appendChild(card);
+
+      currentCalls.set(peerId, { call: null, videoEl: video, name, card });
+      updateStudentCount();
+    }
+
+    function removeStudentScreen(peerId) {
+      const entry = currentCalls.get(peerId);
+      if (!entry) return;
+      entry.card.remove();
+      currentCalls.delete(peerId);
+      updateStudentCount();
+      if (currentCalls.size === 0) show($('empty-state'));
+    }
+
+    function updateStudentCount() {
+      $('student-count').textContent = currentCalls.size;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    window.toggleFullscreen = function(btn) {
+      const card = btn.closest('.student-card');
+      if (card.classList.contains('fullscreen')) {
+        card.classList.remove('fullscreen');
+        btn.textContent = 'Agrandir';
+      } else {
+        // Fermer les autres
+        document.querySelectorAll('.student-card.fullscreen').forEach(c => {
+          c.classList.remove('fullscreen');
+          c.querySelector('button').textContent = 'Agrandir';
+        });
+        card.classList.add('fullscreen');
+        btn.textContent = 'Réduire';
+      }
+    };
+
+    // ========== ÉLÈVE ==========
+    function startAsStudent(room) {
+      isTeacher = false;
+      roomId = room;
+      hide($('teacher-view'));
+      show($('student-view'));
+
+      $('btn-share').addEventListener('click', async () => {
+        const first = $('firstname').value.trim();
+        const last = $('lastname').value.trim();
+        if (!first || !last) {
+          showError('Veuillez entrer votre prénom et votre nom.');
+          return;
+        }
+
+        const fullName = `${first} ${last}`;
+        $('btn-share').disabled = true;
+        $('btn-share').textContent = 'Connexion…';
+
+        try {
+          // 1. Capturer l'écran
+          localStream = await navigator.mediaDevices.getDisplayMedia({
+            video: { cursor: 'always', frameRate: 15 },
+            audio: false
+          });
+
+          // 2. Créer le peer
+          peer = new Peer(PEER_CONFIG);
+
+          peer.on('open', (myId) => {
+            console.log('Élève connecté, mon ID:', myId);
+            // 3. Appeler l'enseignant avec le stream + metadata
+            const call = peer.call(roomId, localStream, {
+              metadata: { name: fullName }
+            });
+
+            if (!call) {
+              showError('Impossible de rejoindre la classe. Vérifiez le lien.');
+              stopSharing();
+              return;
+            }
+
+            call.on('close', () => {
+              showError('La connexion a été fermée par l\'enseignant.');
+              stopSharing();
+            });
+
+            call.on('error', (err) => {
+              console.error(err);
+              showError('Erreur de connexion : ' + (err.type || err.message));
+              stopSharing();
+            });
+
+            // Gestion de l'arrêt du partage par l'utilisateur (barre native du navigateur)
+            localStream.getVideoTracks()[0].addEventListener('ended', () => {
+              stopSharing();
+            });
+
+            // Afficher l'état "en partage"
+            hide($('student-form'));
+            show($('student-sharing'));
+            $('student-display-name').textContent = fullName;
+            hideError();
+          });
+
+          peer.on('error', (err) => {
+            console.error(err);
+            showError('Erreur PeerJS : ' + err.type);
+            $('btn-share').disabled = false;
+            $('btn-share').textContent = 'Partager mon écran';
+          });
+
+        } catch (err) {
+          console.error(err);
+          showError('Impossible d\'accéder à l\'écran. Autorisez le partage dans le navigateur.');
+          $('btn-share').disabled = false;
+          $('btn-share').textContent = 'Partager mon écran';
+        }
+      });
+
+      $('btn-stop-share').addEventListener('click', stopSharing);
+    }
+
+    function stopSharing() {
+      if (localStream) {
+        localStream.getTracks().forEach(t => t.stop());
+        localStream = null;
+      }
+      if (peer) {
+        peer.destroy();
+        peer = null;
+      }
+      show($('student-form'));
+      hide($('student-sharing'));
+      $('btn-share').disabled = false;
+      $('btn-share').textContent = 'Partager mon écran';
+    }
+
+    function showError(msg) {
+      const el = $('student-error');
+      el.textContent = msg;
+      show(el);
+    }
+    function hideError() {
+      hide($('student-error'));
+    }
+
+    // ========== INITIALISATION ==========
+    document.addEventListener('DOMContentLoaded', () => {
+      const roomFromUrl = getQueryParam('room');
+
+      if (roomFromUrl) {
+        // Mode élève
+        startAsStudent(roomFromUrl);
+      } else {
+        // Mode enseignant (page d'accueil)
+        $('btn-create').addEventListener('click', () => {
+          $('btn-create').disabled = true;
+          $('btn-create').textContent = 'Création…';
+          startAsTeacher();
+        });
+
+        $('btn-copy-link').addEventListener('click', () => {
+          const link = $('share-link').textContent;
+          navigator.clipboard.writeText(link).then(() => {
+            const btn = $('btn-copy-link');
+            const old = btn.textContent;
+            btn.textContent = 'Copié !';
+            setTimeout(() => btn.textContent = old, 2000);
+          });
+        });
+
+        $('btn-close-class').addEventListener('click', () => {
+          if (confirm('Fermer la classe ? Tous les partages seront arrêtés.')) {
+            if (peer) peer.destroy();
+            location.reload();
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
