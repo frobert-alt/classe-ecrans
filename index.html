@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Écrans élèves – Pôle routier</title>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<style>
+:root{--rouille:#C0392B;--rouge:#96291C;--marine:#1A2F4A;--fond:#eef1f5;--carte:#fff;--texte:#1A2F4A;--gris:#6b7685;--vert:#1e8e5a;}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--texte);background:var(--fond)}
+button{font:inherit;cursor:pointer;border:0;border-radius:8px}
+.titre{font-family:"Arial Narrow","Roboto Condensed",Arial,sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.hidden{display:none!important}
+
+/* ---------- ÉLÈVE ---------- */
+#eleve{min-height:100%;display:flex;align-items:center;justify-content:center;padding:16px;background:linear-gradient(135deg,var(--rouille),var(--rouge) 35%,var(--marine))}
+.carte{background:var(--carte);border-radius:16px;padding:28px 24px;width:100%;max-width:420px;box-shadow:0 12px 40px rgba(0,0,0,.25)}
+.carte h1{margin:0 0 4px;font-size:1.6rem;color:var(--marine)}
+.carte p.sous{margin:0 0 20px;color:var(--gris)}
+label{display:block;font-weight:600;margin:14px 0 6px}
+input{width:100%;font:inherit;font-size:1.1rem;padding:12px;border:2px solid #cfd6df;border-radius:8px}
+input:focus{outline:none;border-color:var(--marine)}
+#code-eleve{font-size:1.8rem;letter-spacing:.4em;text-align:center}
+.btn-grand{width:100%;margin-top:22px;padding:14px;font-size:1.1rem;font-weight:700;background:var(--rouille);color:#fff}
+.btn-grand:hover{background:var(--rouge)}
+.btn-grand:disabled{opacity:.6;cursor:wait}
+.msg{margin-top:14px;padding:10px 12px;border-radius:8px;font-size:.95rem}
+.msg.err{background:#fdecea;color:#8a1f12}
+.msg.info{background:#e8f0fb;color:var(--marine)}
+.etat{text-align:center}
+.pastille{width:84px;height:84px;border-radius:50%;margin:6px auto 14px;display:flex;align-items:center;justify-content:center;font-size:2.4rem;color:#fff;background:var(--vert)}
+.pastille.live{background:var(--rouille);animation:pulse 1.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(192,57,43,.6)}70%{box-shadow:0 0 0 18px rgba(192,57,43,0)}100%{box-shadow:0 0 0 0 rgba(192,57,43,0)}}
+.btn-stop{margin-top:18px;padding:10px 18px;background:#e3e7ec;color:var(--marine);font-weight:600}
+
+/* ---------- PROFESSEUR ---------- */
+#prof{height:100%;display:flex;flex-direction:column}
+header{background:var(--marine);color:#fff;padding:10px 16px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center}
+header .appli{font-size:1.15rem}
+.bloc-code{display:flex;align-items:center;gap:10px}
+.bloc-code .lib{font-size:.85rem;opacity:.8;line-height:1.1}
+.bloc-code .val{font-size:2.2rem;font-weight:800;letter-spacing:.15em;background:var(--rouille);padding:2px 14px;border-radius:8px}
+.bloc-lien{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
+.bloc-lien code{background:rgba(255,255,255,.12);padding:6px 10px;border-radius:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;font-size:.9rem}
+.hbtn{background:rgba(255,255,255,.15);color:#fff;padding:7px 12px;font-size:.9rem;white-space:nowrap}
+.hbtn:hover{background:rgba(255,255,255,.28)}
+.compteur{font-weight:700;white-space:nowrap}
+#statut-prof{font-size:.85rem;opacity:.85}
+main{flex:1;padding:12px;min-height:0}
+#grille{height:100%;display:grid;gap:10px;grid-template-columns:repeat(4,1fr);grid-auto-rows:minmax(0,1fr)}
+@media (max-width:900px){#grille{grid-template-columns:repeat(2,1fr);grid-auto-rows:200px;height:auto}}
+.tuile{position:relative;background:#0f1b2b;border-radius:10px;overflow:hidden;min-height:120px;cursor:pointer;border:3px solid transparent}
+.tuile:hover{border-color:var(--rouille)}
+.tuile video{width:100%;height:100%;object-fit:contain;display:block;background:#0f1b2b}
+.tuile .nom{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(transparent,rgba(0,0,0,.8));color:#fff;padding:18px 10px 6px;font-weight:700;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tuile .attente{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#9fb0c4;font-size:.9rem}
+.libre{background:transparent;border:2px dashed #b9c3cf;cursor:default;display:flex;align-items:center;justify-content:center;color:#97a3b2;font-size:.9rem}
+.libre:hover{border-color:#b9c3cf}
+
+#projection{position:fixed;inset:0;background:#000;z-index:10;display:flex;flex-direction:column}
+#projection video{flex:1;min-height:0;width:100%;object-fit:contain}
+#projection .barre{display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--marine);color:#fff}
+#projection .barre .nom{flex:1;font-size:1.3rem;font-weight:800}
+#projection .barre button{background:rgba(255,255,255,.15);color:#fff;padding:8px 14px;font-size:1rem}
+#projection .barre button:hover{background:var(--rouille)}
+.aide{font-size:.8rem;opacity:.75}
+</style>
+</head>
+<body>
+
+<!-- ===================== ÉCRAN ÉLÈVE ===================== -->
+<section id="eleve" class="hidden">
+  <div class="carte" id="formulaire">
+    <h1 class="titre">Partage d'écran</h1>
+    <p class="sous">Pôle routier – Lycée professionnel du Val Moré</p>
+    <form id="form-eleve" autocomplete="off">
+      <label for="nom-eleve">Ton prénom et ton nom</label>
+      <input id="nom-eleve" maxlength="40" placeholder="Ex. : Lucas MARTIN" required>
+      <div id="bloc-code-eleve">
+        <label for="code-eleve">Code donné par le professeur</label>
+        <input id="code-eleve" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="••••" required>
+      </div>
+      <button class="btn-grand" id="btn-partager" type="submit">Partager mon écran</button>
+    </form>
+    <div id="msg-eleve" class="msg hidden"></div>
+  </div>
+
+  <div class="carte etat hidden" id="ecran-actif">
+    <div class="pastille" id="pastille">✓</div>
+    <h1 class="titre" id="titre-etat">Écran partagé</h1>
+    <p class="sous" id="texte-etat">Ton professeur voit ton écran. Tu peux continuer ton travail normalement.</p>
+    <button class="btn-stop" id="btn-stop">Arrêter le partage</button>
+  </div>
+</section>
+
+<!-- ===================== ÉCRAN PROFESSEUR ===================== -->
+<section id="prof" class="hidden">
+  <header>
+    <div class="appli titre">Écrans élèves</div>
+    <div class="bloc-code hidden"><div class="lib">CODE<br>DE SÉANCE</div><div class="val" id="code-prof">····</div></div>
+    <div class="bloc-lien">
+      <code id="lien-eleves" class="hidden"></code>
+      <button class="hbtn" id="btn-copier">Copier le lien élèves</button>
+    </div>
+    <div class="compteur"><span id="nb">0</span> / 12 élèves</div>
+    <button class="hbtn" id="btn-nouveau" title="Crée un nouveau lien et déconnecte tous les élèves">Nouveau lien</button>
+    <button class="hbtn" id="btn-pleinecran">Plein écran</button>
+    <div id="statut-prof">Connexion au service…</div>
+  </header>
+  <main><div id="grille"></div></main>
+
+  <div id="projection" class="hidden">
+    <video id="video-proj" autoplay muted playsinline></video>
+    <div class="barre">
+      <button id="btn-prec" title="Élève précédent (←)">◀</button>
+      <div class="nom" id="nom-proj"></div>
+      <span class="aide">← → pour changer d'élève · Échap pour revenir</span>
+      <button id="btn-suiv" title="Élève suivant (→)">▶</button>
+      <button id="btn-fermer" title="Revenir à la mosaïque (Échap)">✕ Mosaïque</button>
+    </div>
+  </div>
+</section>
+
+<script>
+(() => {
+"use strict";
+const MAX_ELEVES = 12;
+const PREFIXE = "valmore-ecrans-v1-";
+const $ = id => document.getElementById(id);
+
+// Serveur de mise en relation : service public PeerJS par défaut.
+// (?srv=hote:port permet d'utiliser un serveur PeerJS local.)
+const params = new URLSearchParams(location.search);
+const OPTS = { config: { iceServers: [
+  { urls: "stun:stun.l.google.com:19302" },
+  { urls: "stun:stun1.l.google.com:19302" } ] } };
+if (params.get("srv")) {
+  const [host, port] = params.get("srv").split(":");
+  Object.assign(OPTS, { host, port: Number(port || 9000), path: "/", secure: location.protocol === "https:" });
+}
+
+const estProf = location.hash.replace("#", "").toLowerCase() === "prof";
+estProf ? demarrerProf() : demarrerEleve();
+
+/* =========================================================
+   CÔTÉ ÉLÈVE
+   ========================================================= */
+function demarrerEleve() {
+  $("eleve").classList.remove("hidden");
+  const msg = $("msg-eleve");
+  let peer = null, conn = null, appel = null, flux = null, battement = null;
+
+  try { $("nom-eleve").value = localStorage.getItem("ve-nom") || ""; } catch (e) {}
+  // Le code est dans le lien donné par le professeur : l'élève n'a rien à taper.
+  const codeUrl = params.get("code");
+  if (codeUrl && /^\d{4}$/.test(codeUrl)) {
+    $("code-eleve").value = codeUrl;
+    $("code-eleve").required = false;
+    $("bloc-code-eleve").classList.add("hidden");
+  }
+
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+    afficher("Le partage d'écran n'est pas possible sur cet appareil. Utilise un ordinateur avec Chrome, Edge ou Firefox.", "err");
+    $("btn-partager").disabled = true;
+  }
+
+  function afficher(t, type) { msg.textContent = t; msg.className = "msg " + type; }
+
+  $("form-eleve").addEventListener("submit", async ev => {
+    ev.preventDefault();
+    const nom = $("nom-eleve").value.trim().replace(/\s+/g, " ");
+    const code = $("code-eleve").value.trim();
+    if (nom.length < 2) return afficher("Écris ton prénom et ton nom.", "err");
+    if (!/^\d{4}$/.test(code)) return afficher("Le code doit contenir 4 chiffres.", "err");
+    try { localStorage.setItem("ve-nom", nom); } catch (e) {}
+
+    $("btn-partager").disabled = true;
+    afficher("Choisis « Écran entier » dans la fenêtre qui s'ouvre, puis clique sur « Partager ».", "info");
+    try {
+      flux = await navigator.mediaDevices.getDisplayMedia({
+        video: { frameRate: { ideal: 8, max: 12 }, width: { max: 1920 }, height: { max: 1080 } },
+        audio: false
+      });
+    } catch (e) {
+      $("btn-partager").disabled = false;
+      return afficher("Partage annulé. Clique à nouveau sur « Partager mon écran » et accepte le partage.", "err");
+    }
+    flux.getVideoTracks()[0].addEventListener("ended", () => arreter("Tu as arrêté le partage."));
+    afficher("Connexion au professeur…", "info");
+    connecter(nom, code);
+  });
+
+  function connecter(nom, code) {
+    peer = new Peer(OPTS);
+    const delai = setTimeout(() => arreter("Impossible de joindre le professeur. Vérifie le code et réessaie."), 15000);
+    peer.on("open", () => {
+      conn = peer.connect(PREFIXE + code, { metadata: { nom }, reliable: true });
+      conn.on("open", () => {
+        clearTimeout(delai);
+        appel = peer.call(PREFIXE + code, flux, { metadata: { nom } });
+        battement = setInterval(() => { try { conn.send({ t: "ping" }); } catch (e) {} }, 3000);
+        $("formulaire").classList.add("hidden");
+        $("ecran-actif").classList.remove("hidden");
+        etatProjete(false);
+      });
+      conn.on("data", d => {
+        if (d && d.t === "plein") arreter("La séance est complète (12 élèves maximum).");
+        if (d && d.t === "proj") etatProjete(!!d.on);
+        if (d && d.t === "fin") arreter("Le professeur a terminé la séance.");
+      });
+      conn.on("close", () => { if (flux) arreter("La connexion avec le professeur est terminée."); });
+    });
+    peer.on("error", e => {
+      clearTimeout(delai);
+      if (e.type === "peer-unavailable") arreter("Code inconnu, ou le professeur n'a pas encore ouvert la séance.");
+      else if (e.type === "network" || e.type === "server-error" || e.type === "socket-error")
+        arreter("Problème de réseau : le service de partage n'est pas joignable.");
+      else arreter("Erreur de connexion (" + e.type + "). Réessaie.");
+    });
+  }
+
+  function etatProjete(on) {
+    $("pastille").classList.toggle("live", on);
+    $("pastille").textContent = on ? "●" : "✓";
+    $("titre-etat").textContent = on ? "Projeté au tableau" : "Écran partagé";
+    $("texte-etat").textContent = on
+      ? "Ton écran est affiché au tableau en ce moment."
+      : "Ton professeur voit ton écran. Tu peux continuer ton travail normalement.";
+  }
+
+  function arreter(texte) {
+    clearInterval(battement);
+    try { conn && conn.open && conn.send({ t: "bye" }); } catch (e) {}
+    const f = flux; flux = null;
+    if (f) f.getTracks().forEach(t => t.stop());
+    setTimeout(() => { try { appel && appel.close(); conn && conn.close(); peer && peer.destroy(); } catch (e) {} peer = conn = appel = null; }, 200);
+    $("ecran-actif").classList.add("hidden");
+    $("formulaire").classList.remove("hidden");
+    $("btn-partager").disabled = false;
+    afficher(texte, "err");
+  }
+  $("btn-stop").addEventListener("click", () => arreter("Partage arrêté. Tu peux le relancer quand tu veux."));
+}
+
+/* =========================================================
+   CÔTÉ PROFESSEUR
+   ========================================================= */
+function demarrerProf() {
+  $("prof").classList.remove("hidden");
+  const eleves = new Map();          // peerId -> {nom, conn, appel, flux, vu, tuile}
+  let peer = null, code = null, projete = null;
+
+  const lien = new URL(location.href); lien.hash = "";
+
+  try { code = localStorage.getItem("ve-code"); } catch (e) {}
+  if (!/^\d{4}$/.test(code || "")) code = nouveauCode();
+  ouvrir();
+
+  function nouveauCode() {
+    const c = String(Math.floor(1000 + Math.random() * 9000));
+    try { localStorage.setItem("ve-code", c); } catch (e) {}
+    return c;
+  }
+  function statut(t) { $("statut-prof").textContent = t; }
+
+  function ouvrir() {
+    $("code-prof").textContent = code;
+    lien.searchParams.set("code", code);
+    $("lien-eleves").textContent = lien.href;
+    statut("Connexion au service…");
+    peer = new Peer(PREFIXE + code, OPTS);
+    peer.on("open", () => statut("✅ Prêt : les élèves peuvent se connecter"));
+    peer.on("disconnected", () => { statut("Reconnexion…"); try { peer.reconnect(); } catch (e) {} });
+    peer.on("error", e => {
+      if (e.type === "unavailable-id") {          // page rechargée : l'ancien code est encore réservé quelques secondes
+        statut("Code encore réservé, nouvel essai dans 5 s…");
+        peer.destroy(); setTimeout(ouvrir, 5000);
+      } else if (e.type === "network" || e.type === "server-error" || e.type === "socket-error") {
+        statut("⚠️ Service de partage injoignable (réseau du lycée ?)");
+      } else if (e.type !== "peer-unavailable") statut("⚠️ " + e.type);
+    });
+
+    peer.on("connection", conn => {
+      conn.on("open", () => {
+        const nom = String((conn.metadata && conn.metadata.nom) || "Élève").slice(0, 40);
+        // même élève qui se reconnecte : on remplace l'ancienne tuile
+        for (const [id, el] of eleves) if (el.nom.toLowerCase() === nom.toLowerCase()) retirer(id);
+        if (eleves.size >= MAX_ELEVES) { conn.send({ t: "plein" }); setTimeout(() => conn.close(), 500); return; }
+        const el = eleves.get(conn.peer) || {};
+        Object.assign(el, { nom, conn, vu: Date.now() });
+        eleves.set(conn.peer, el);
+        dessiner();
+      });
+      conn.on("data", d => {
+        const el = eleves.get(conn.peer); if (!el) return;
+        el.vu = Date.now();
+        if (d && d.t === "bye") retirer(conn.peer);
+      });
+      conn.on("close", () => retirer(conn.peer));
+    });
+
+    peer.on("call", appel => {
+      appel.answer();
+      appel.on("stream", flux => {
+        const el = eleves.get(appel.peer) || { nom: (appel.metadata && appel.metadata.nom) || "Élève", vu: Date.now() };
+        el.appel = appel; el.flux = flux;
+        if (!eleves.has(appel.peer)) { if (eleves.size >= MAX_ELEVES) return appel.close(); eleves.set(appel.peer, el); }
+        dessiner();
+        if (projete === appel.peer) $("video-proj").srcObject = flux;
+      });
+      appel.on("close", () => retirer(appel.peer));
+    });
+  }
+
+  function retirer(id) {
+    const el = eleves.get(id); if (!el) return;
+    eleves.delete(id);
+    try { el.appel && el.appel.close(); } catch (e) {}
+    try { el.conn && el.conn.close(); } catch (e) {}
+    if (projete === id) fermerProjection();
+    dessiner();
+  }
+
+  // élève silencieux depuis plus de 12 s (ordinateur éteint, réseau coupé…)
+  setInterval(() => { const now = Date.now(); for (const [id, el] of eleves) if (now - el.vu > 12000) retirer(id); }, 3000);
+
+  function ordre() { return [...eleves.entries()].sort((a, b) => a[1].nom.localeCompare(b[1].nom, "fr")); }
+
+  function dessiner() {
+    const g = $("grille"); g.textContent = "";
+    const liste = ordre();
+    $("nb").textContent = liste.length;
+    liste.forEach(([id, el]) => {
+      const t = document.createElement("div"); t.className = "tuile"; t.title = "Cliquer pour projeter";
+      if (el.flux) {
+        const v = document.createElement("video");
+        v.autoplay = true; v.muted = true; v.playsInline = true; v.srcObject = el.flux;
+        t.appendChild(v);
+      } else {
+        const a = document.createElement("div"); a.className = "attente"; a.textContent = "Connexion de l'écran…"; t.appendChild(a);
+      }
+      const n = document.createElement("div"); n.className = "nom"; n.textContent = el.nom; t.appendChild(n);
+      t.addEventListener("click", () => projeter(id));
+      g.appendChild(t);
+    });
+    for (let i = liste.length; i < MAX_ELEVES; i++) {
+      const l = document.createElement("div"); l.className = "tuile libre"; l.textContent = "Place libre"; g.appendChild(l);
+    }
+  }
+
+  function signaler(id, on) { const el = eleves.get(id); try { el && el.conn && el.conn.send({ t: "proj", on }); } catch (e) {} }
+
+  function projeter(id) {
+    const el = eleves.get(id); if (!el) return;
+    if (projete && projete !== id) signaler(projete, false);
+    projete = id;
+    $("video-proj").srcObject = el.flux || null;
+    $("nom-proj").textContent = el.nom;
+    $("projection").classList.remove("hidden");
+    signaler(id, true);
+    if (!document.fullscreenElement && document.documentElement.requestFullscreen)
+      document.documentElement.requestFullscreen().catch(() => {});
+  }
+  function fermerProjection() {
+    if (projete) signaler(projete, false);
+    projete = null;
+    $("projection").classList.add("hidden");
+    $("video-proj").srcObject = null;
+  }
+  function voisin(sens) {
+    const ids = ordre().map(e => e[0]); if (!ids.length) return;
+    const i = ids.indexOf(projete);
+    projeter(ids[(i + sens + ids.length) % ids.length]);
+  }
+
+  $("btn-fermer").onclick = fermerProjection;
+  $("btn-prec").onclick = () => voisin(-1);
+  $("btn-suiv").onclick = () => voisin(1);
+  document.addEventListener("keydown", e => {
+    if ($("projection").classList.contains("hidden")) return;
+    if (e.key === "Escape") fermerProjection();
+    if (e.key === "ArrowRight") voisin(1);
+    if (e.key === "ArrowLeft") voisin(-1);
+  });
+  $("btn-pleinecran").onclick = () => {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen().catch(() => {});
+  };
+  $("btn-copier").onclick = async () => {
+    const texte = lien.href;
+    try { await navigator.clipboard.writeText(texte); $("btn-copier").textContent = "Lien copié ✓"; }
+    catch (e) { $("btn-copier").textContent = "Sélectionnez le lien"; }
+    setTimeout(() => $("btn-copier").textContent = "Copier le lien", 2000);
+  };
+  $("btn-nouveau").onclick = () => {
+    if (!confirm("Créer un nouveau code ? Tous les élèves connectés seront déconnectés.")) return;
+    for (const [, el] of eleves) { try { el.conn.send({ t: "fin" }); } catch (e) {} }
+    setTimeout(() => {
+      [...eleves.keys()].forEach(retirer);
+      peer.destroy(); code = nouveauCode(); ouvrir();
+    }, 300);
+  };
+  window.addEventListener("beforeunload", () => { for (const [, el] of eleves) { try { el.conn.send({ t: "fin" }); } catch (e) {} } });
+  dessiner();
+}
+})();
+</script>
+</body>
+</html>
