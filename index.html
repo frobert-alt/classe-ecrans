@@ -66,6 +66,12 @@ main{flex:1;padding:12px;min-height:0}
 #projection .barre button{background:rgba(255,255,255,.15);color:#fff;padding:8px 14px;font-size:1rem}
 #projection .barre button:hover{background:var(--rouille)}
 .aide{font-size:.8rem;opacity:.75}
+.logo{height:48px;width:auto;margin-right:12px;vertical-align:middle}
+.carte .logo{height:64px;display:block;margin:0 0 14px}
+.signature{font-size:.9rem;opacity:.9;margin-top:2px}
+.horloge{font-size:.85rem;opacity:.85}
+.carte .signature{color:var(--gris);opacity:1;margin:0 0 4px;font-size:.95rem}
+.carte .horloge{color:var(--gris);opacity:1;margin:0 0 18px;font-size:.9rem}
 </style>
 </head>
 <body>
@@ -73,8 +79,11 @@ main{flex:1;padding:12px;min-height:0}
 <!-- ===================== ÉCRAN ÉLÈVE ===================== -->
 <section id="eleve" class="hidden">
   <div class="carte" id="formulaire">
+    <img src="logo.png" alt="Logo du lycée" class="logo" onerror="this.style.display='none'">
     <h1 class="titre">Partage d'écran</h1>
     <p class="sous">Pôle routier – Lycée professionnel du Val Moré</p>
+    <p class="signature">Freddy ROBERT · Enseignant en transport et logistique</p>
+    <p class="horloge"></p>
     <form id="form-eleve" autocomplete="off">
       <label for="nom-eleve">Ton prénom et ton nom</label>
       <input id="nom-eleve" maxlength="40" placeholder="Ex. : Lucas MARTIN" required>
@@ -98,7 +107,8 @@ main{flex:1;padding:12px;min-height:0}
 <!-- ===================== ÉCRAN PROFESSEUR ===================== -->
 <section id="prof" class="hidden">
   <header>
-    <div class="appli titre">Écrans élèves</div>
+    <div class="appli titre"><img src="logo.png" alt="" class="logo" onerror="this.style.display='none'">Écrans élèves</div>
+    <div class="signature">Freddy ROBERT · Enseignant en transport et logistique<br><span class="horloge"></span></div>
     <div class="bloc-code hidden"><div class="lib">CODE<br>DE SÉANCE</div><div class="val" id="code-prof">····</div></div>
     <div class="bloc-lien">
       <code id="lien-eleves" class="hidden"></code>
@@ -129,6 +139,16 @@ main{flex:1;padding:12px;min-height:0}
 const MAX_ELEVES = 12;
 const PREFIXE = "valmore-ecrans-v1-";
 const $ = id => document.getElementById(id);
+
+// Date et heure du jour, mises à jour automatiquement
+function majHorloge() {
+  const d = new Date();
+  const txt = d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
+    + " · " + d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  document.querySelectorAll(".horloge").forEach(e => e.textContent = txt);
+}
+majHorloge();
+setInterval(majHorloge, 30000);
 
 // Serveur de mise en relation : service public PeerJS par défaut.
 // (?srv=hote:port permet d'utiliser un serveur PeerJS local.)
