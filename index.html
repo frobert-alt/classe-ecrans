@@ -33,7 +33,7 @@ input:focus{outline:none;border-color:var(--marine)}
 .pastille{width:84px;height:84px;border-radius:50%;margin:6px auto 14px;display:flex;align-items:center;justify-content:center;font-size:2.4rem;color:#fff;background:var(--vert)}
 .pastille.live{background:var(--rouille);animation:pulse 1.6s infinite}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(192,57,43,.6)}70%{box-shadow:0 0 0 18px rgba(192,57,43,0)}100%{box-shadow:0 0 0 0 rgba(192,57,43,0)}}
-.btn-stop{margin-top:18px;padding:10px 18px;background:#e3e7ec;color:var(--marine);font-weight:600}
+.fin-info{margin-top:18px;padding:10px 14px;background:#e3e7ec;color:var(--marine);font-weight:600;border-radius:8px;font-size:.95rem}
 
 /* ---------- PROFESSEUR ---------- */
 #prof{height:100%;display:flex;flex-direction:column}
@@ -100,7 +100,7 @@ main{flex:1;padding:12px;min-height:0}
     <div class="pastille" id="pastille">✓</div>
     <h1 class="titre" id="titre-etat">Écran partagé</h1>
     <p class="sous" id="texte-etat">Ton professeur voit ton écran. Tu peux continuer ton travail normalement.</p>
-    <button class="btn-stop" id="btn-stop">Arrêter le partage</button>
+    <p class="fin-info">Pour quitter : ferme complètement la fenêtre.</p>
   </div>
 </section>
 
@@ -170,22 +170,21 @@ estProf ? demarrerProf() : demarrerEleve();
 function demarrerEleve() {
   $("eleve").classList.remove("hidden");
   const msg = $("msg-eleve");
-  let peer = null, conn = null, appel = null, flux = null, battement = null;
+  let peer = null, conn = null, appel = null, flux = null;
+  let battement = null, surveillance = null, relance = null;
+  let nomS = "", codeS = "", dejaConnecte = false, enLigne = false, dernierSigne = 0, essais = 0;
 
   try { $("nom-eleve").value = localStorage.getItem("ve-nom") || ""; } catch (e) {}
-  // Le code est dans le lien donné par le professeur : l'élève n'a rien à taper.
   const codeUrl = params.get("code");
   if (codeUrl && /^\d{4}$/.test(codeUrl)) {
     $("code-eleve").value = codeUrl;
     $("code-eleve").required = false;
     $("bloc-code-eleve").classList.add("hidden");
   }
-
   if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
-    afficher("Le partage d'écran n'est pas possible sur cet appareil. Utilise un ordinateur avec Chrome, Edge ou Firefox.", "err");
+    afficher("Le partage d'écran n'est pas possible sur cet appareil. Utilise un ordinateur avec Firefox, Chrome ou Edge.", "err");
     $("btn-partager").disabled = true;
   }
-
   function afficher(t, type) { msg.textContent = t; msg.className = "msg " + type; }
 
   $("form-eleve").addEventListener("submit", async ev => {
@@ -195,50 +194,101 @@ function demarrerEleve() {
     if (nom.length < 2) return afficher("Écris ton prénom et ton nom.", "err");
     if (!/^\d{4}$/.test(code)) return afficher("Le code doit contenir 4 chiffres.", "err");
     try { localStorage.setItem("ve-nom", nom); } catch (e) {}
-
     $("btn-partager").disabled = true;
     afficher("Choisis « Écran entier » dans la fenêtre qui s'ouvre, puis clique sur « Partager ».", "info");
     try {
       flux = await navigator.mediaDevices.getDisplayMedia({
-        video: { frameRate: { ideal: 8, max: 12 }, width: { max: 1920 }, height: { max: 1080 } },
-        audio: false
+        video: { frameRate: { ideal: 8, max: 12 }, width: { max: 1920 }, height: { max: 1080 } }, audio: false
       });
     } catch (e) {
       $("btn-partager").disabled = false;
       return afficher("Partage annulé. Clique à nouveau sur « Partager mon écran » et accepte le partage.", "err");
     }
-    flux.getVideoTracks()[0].addEventListener("ended", () => arreter("Tu as arrêté le partage."));
+    // Seul cas où le partage s'arrête côté élève : il a coupé le partage du navigateur.
+    flux.getVideoTracks()[0].addEventListener("ended", () => arreter("Le partage a été coupé. Clique sur « Partager mon écran » pour le relancer."));
+    nomS = nom; codeS = code; dejaConnecte = false; essais = 0;
     afficher("Connexion au professeur…", "info");
-    connecter(nom, code);
+    connecter();
   });
 
-  function connecter(nom, code) {
-    peer = new Peer(OPTS);
-    const delai = setTimeout(() => arreter("Impossible de joindre le professeur. Vérifie le code et réessaie."), 15000);
-    peer.on("open", () => {
-      conn = peer.connect(PREFIXE + code, { metadata: { nom }, reliable: true });
-      conn.on("open", () => {
-        clearTimeout(delai);
-        appel = peer.call(PREFIXE + code, flux, { metadata: { nom } });
-        battement = setInterval(() => { try { conn.send({ t: "ping" }); } catch (e) {} }, 3000);
+  function nettoyer() {
+    clearInterval(battement); battement = null;
+    clearTimeout(relance); relance = null;
+    enLigne = false;
+    const a = appel, c = conn, p = peer;
+    appel = conn = peer = null;
+    try { a && a.close(); } catch (e) {}
+    try { c && c.close(); } catch (e) {}
+    try { p && p.destroy(); } catch (e) {}
+  }
+
+  // Reconnexion automatique : on garde le flux de l'écran, on recrée seulement la liaison.
+  function planifierReconnexion() {
+    if (!flux || relance) return;
+    nettoyer();
+    essais++;
+    etatReconnexion();
+    const delai = Math.min(2000 + essais * 1000, 8000);
+    relance = setTimeout(() => { relance = null; if (flux) connecter(); }, delai);
+  }
+
+  function connecter() {
+    nettoyer();
+    const p = new Peer(OPTS); peer = p;
+    const garde = setTimeout(() => { if (peer === p && !enLigne) echecConnexion("délai"); }, 15000);
+    p.on("open", () => {
+      if (peer !== p) return;
+      const c = peer.connect(PREFIXE + codeS, { metadata: { nom: nomS }, reliable: true }); conn = c;
+      c.on("open", () => {
+        if (conn !== c) return;
+        clearTimeout(garde);
+        enLigne = true; dejaConnecte = true; essais = 0; dernierSigne = Date.now();
+        appel = peer.call(PREFIXE + codeS, flux, { metadata: { nom: nomS } });
+        battement = setInterval(() => { try { c.send({ t: "ping" }); } catch (e) {} }, 3000);
         $("formulaire").classList.add("hidden");
         $("ecran-actif").classList.remove("hidden");
         etatProjete(false);
       });
-      conn.on("data", d => {
+      c.on("data", d => {
+        dernierSigne = Date.now();
         if (d && d.t === "plein") arreter("La séance est complète (12 élèves maximum).");
         if (d && d.t === "proj") etatProjete(!!d.on);
         if (d && d.t === "fin") arreter("Le professeur a terminé la séance.");
       });
-      conn.on("close", () => { if (flux) arreter("La connexion avec le professeur est terminée."); });
+      c.on("close", () => { if (conn === c && flux) planifierReconnexion(); });
+      c.on("error", () => { if (conn === c && flux) planifierReconnexion(); });
     });
-    peer.on("error", e => {
-      clearTimeout(delai);
-      if (e.type === "peer-unavailable") arreter("Code inconnu, ou le professeur n'a pas encore ouvert la séance.");
-      else if (e.type === "network" || e.type === "server-error" || e.type === "socket-error")
-        arreter("Problème de réseau : le service de partage n'est pas joignable.");
-      else arreter("Erreur de connexion (" + e.type + "). Réessaie.");
+    p.on("disconnected", () => { if (peer === p && !enLigne && flux) planifierReconnexion(); });
+    p.on("error", e => {
+      if (peer !== p) return;
+      clearTimeout(garde);
+      echecConnexion(e.type);
     });
+  }
+
+  function echecConnexion(type) {
+    if (!flux) return;
+    // Première connexion : on explique l'erreur. Après une coupure : on réessaie sans fin.
+    if (!dejaConnecte && type === "peer-unavailable")
+      return arreter("Code inconnu, ou le professeur n'a pas encore ouvert la séance.");
+    if (!dejaConnecte && essais >= 3)
+      return arreter("Problème de réseau : le service de partage n'est pas joignable.");
+    planifierReconnexion();
+  }
+
+  // Si le professeur ne donne plus signe de vie depuis 10 s, on relance la liaison.
+  surveillance = setInterval(() => {
+    if (flux && enLigne && Date.now() - dernierSigne > 10000) planifierReconnexion();
+  }, 2000);
+  window.addEventListener("online", () => { if (flux && !enLigne) { clearTimeout(relance); relance = null; connecter(); } });
+
+  function etatReconnexion() {
+    $("formulaire").classList.add("hidden");
+    $("ecran-actif").classList.remove("hidden");
+    $("pastille").classList.remove("live");
+    $("pastille").textContent = "↻";
+    $("titre-etat").textContent = "Reconnexion automatique…";
+    $("texte-etat").textContent = "La connexion a été coupée. Ne touche à rien : ton écran revient tout seul chez le professeur.";
   }
 
   function etatProjete(on) {
@@ -251,17 +301,20 @@ function demarrerEleve() {
   }
 
   function arreter(texte) {
-    clearInterval(battement);
     try { conn && conn.open && conn.send({ t: "bye" }); } catch (e) {}
     const f = flux; flux = null;
     if (f) f.getTracks().forEach(t => t.stop());
-    setTimeout(() => { try { appel && appel.close(); conn && conn.close(); peer && peer.destroy(); } catch (e) {} peer = conn = appel = null; }, 200);
+    setTimeout(nettoyer, 200);
     $("ecran-actif").classList.add("hidden");
     $("formulaire").classList.remove("hidden");
     $("btn-partager").disabled = false;
     afficher(texte, "err");
   }
-  $("btn-stop").addEventListener("click", () => arreter("Partage arrêté. Tu peux le relancer quand tu veux."));
+
+  // Sortie : l'élève ferme complètement la fenêtre.
+  window.addEventListener("beforeunload", e => {
+    try { conn && conn.open && conn.send({ t: "bye" }); } catch (err) {}
+  });
 }
 
 /* =========================================================
@@ -296,9 +349,9 @@ function demarrerProf() {
     peer.on("error", e => {
       if (e.type === "unavailable-id") {          // page rechargée : l'ancien code est encore réservé quelques secondes
         statut("Code encore réservé, nouvel essai dans 5 s…");
-        peer.destroy(); setTimeout(ouvrir, 5000);
+        peer.destroy(); peer = null; setTimeout(ouvrir, 5000);
       } else if (e.type === "network" || e.type === "server-error" || e.type === "socket-error") {
-        statut("⚠️ Service de partage injoignable (réseau du lycée ?)");
+        statut("⚠️ Réseau coupé – reconnexion automatique…");
       } else if (e.type !== "peer-unavailable") statut("⚠️ " + e.type);
     });
 
@@ -342,6 +395,15 @@ function demarrerProf() {
     if (projete === id) fermerProjection();
     dessiner();
   }
+
+  // signe de vie envoyé aux élèves toutes les 3 s (leur permet de détecter une coupure)
+  setInterval(() => { for (const [, el] of eleves) { try { el.conn && el.conn.open && el.conn.send({ t: "ping" }); } catch (e) {} } }, 3000);
+  // le service de mise en relation a décroché : on se reconnecte tout seul
+  setInterval(() => {
+    if (!peer) return;
+    if (peer.destroyed) { ouvrir(); }
+    else if (peer.disconnected) { statut("Reconnexion…"); try { peer.reconnect(); } catch (e) {} }
+  }, 5000);
 
   // élève silencieux depuis plus de 12 s (ordinateur éteint, réseau coupé…)
   setInterval(() => { const now = Date.now(); for (const [id, el] of eleves) if (now - el.vu > 12000) retirer(id); }, 3000);
@@ -422,7 +484,6 @@ function demarrerProf() {
       peer.destroy(); code = nouveauCode(); ouvrir();
     }, 300);
   };
-  window.addEventListener("beforeunload", () => { for (const [, el] of eleves) { try { el.conn.send({ t: "fin" }); } catch (e) {} } });
   dessiner();
 }
 })();
