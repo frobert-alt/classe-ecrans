@@ -161,8 +161,55 @@ if (params.get("srv")) {
   Object.assign(OPTS, { host, port: Number(port || 9000), path: "/", secure: location.protocol === "https:" });
 }
 
+// Relais vidéo (TURN) Metered, forfait gratuit 500 Mo/mois sans carte (compte du professeur).
+// Le port 443 sécurisé passe le proxy du lycée : indispensable pour Chrome / Edge.
+// Au-delà du quota mensuel, le relais s'arrête simplement (aucune facturation).
+function ajouterRelais() {
+  OPTS.config.iceServers.push({
+    urls: [
+      "turn:global.relay.metered.ca:80",
+      "turn:global.relay.metered.ca:80?transport=tcp",
+      "turn:global.relay.metered.ca:443",
+      "turns:global.relay.metered.ca:443?transport=tcp"
+    ],
+    username: "288b0304b8f9f0f2ec23c375",
+    credential: "ZjfgO5xf+YZ3Co5H"
+  });
+  return Promise.resolve();
+}
+
+// Économie du quota : si l'élève passe par le relais, on limite le débit de son écran.
+const DEBIT_RELAIS = 300000; // 300 kbit/s
+function surveillerDebit(appel) {
+  const verifier = async () => {
+    const pc = appel && appel.peerConnection;
+    if (!pc || pc.connectionState === "closed") return clearInterval(t);
+    try {
+      const stats = await pc.getStats(); let paire = null; const cands = {};
+      stats.forEach(r => {
+        if (r.type === "local-candidate") cands[r.id] = r;
+        if (r.type === "candidate-pair" && (r.nominated || r.selected) && r.state === "succeeded") paire = r;
+      });
+      const parRelais = paire && cands[paire.localCandidateId] && cands[paire.localCandidateId].candidateType === "relay";
+      for (const sender of pc.getSenders()) {
+        if (!sender.track || sender.track.kind !== "video") continue;
+        const prm = sender.getParameters(); if (!prm.encodings || !prm.encodings.length) prm.encodings = [{}];
+        const voulu = parRelais ? DEBIT_RELAIS : undefined;
+        if (prm.encodings[0].maxBitrate !== voulu) {
+          if (voulu) prm.encodings[0].maxBitrate = voulu; else delete prm.encodings[0].maxBitrate;
+          await sender.setParameters(prm);
+        }
+      }
+    } catch (e) {}
+  };
+  const t = setInterval(verifier, 5000); setTimeout(verifier, 2500);
+}
+
+// Test : ?relais=1 force le passage par le relais (diagnostic).
+if (params.get("relais") === "1") OPTS.config.iceTransportPolicy = "relay";
+
 const estProf = location.hash.replace("#", "").toLowerCase() === "prof";
-estProf ? demarrerProf() : demarrerEleve();
+ajouterRelais().then(() => estProf ? demarrerProf() : demarrerEleve());
 
 /* =========================================================
    CÔTÉ ÉLÈVE
@@ -244,6 +291,7 @@ function demarrerEleve() {
         clearTimeout(garde);
         enLigne = true; dejaConnecte = true; essais = 0; dernierSigne = Date.now();
         appel = peer.call(PREFIXE + codeS, flux, { metadata: { nom: nomS } });
+        surveillerDebit(appel);
         battement = setInterval(() => { try { c.send({ t: "ping" }); } catch (e) {} }, 3000);
         $("formulaire").classList.add("hidden");
         $("ecran-actif").classList.remove("hidden");
