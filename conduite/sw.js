@@ -1,5 +1,5 @@
-const CACHE = "conduite-bcce-v1";
-const FILES = ["./", "index.html", "manifest.json", "icon-192.png", "icon-512.png", "icon-maskable-192.png", "icon-maskable-512.png", "apple-touch-icon.png"];
+const CACHE = "conduite-bcce-v2";
+const FILES = ["./", "index.html", "manifest.json", "volant-192.png", "volant-512.png", "volant-maskable-192.png", "volant-maskable-512.png", "volant-apple.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES))); self.skipWaiting(); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(k => Promise.all(k.filter(n => n !== CACHE).map(n => caches.delete(n))))); self.clients.claim(); });
 self.addEventListener("fetch", e => {

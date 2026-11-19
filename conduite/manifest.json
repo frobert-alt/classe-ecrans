@@ -1,6 +1,6 @@
 {
   "name": "Conduite B · C · CE — Bac Pro CRM",
-  "short_name": "Conduite BCCE",
+  "short_name": "Conduite",
   "description": "Grille officielle d'observation et de notation de la conduite B · C · CE – Lycée du Val Moré",
   "id": "./",
   "start_url": "./",
@@ -12,25 +12,25 @@
   "lang": "fr",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "volant-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icon-512.png",
+      "src": "volant-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icon-maskable-192.png",
+      "src": "volant-maskable-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "icon-maskable-512.png",
+      "src": "volant-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
