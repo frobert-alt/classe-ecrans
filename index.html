@@ -386,7 +386,26 @@ function demarrerProf() {
 
   try { code = localStorage.getItem("ve-code"); } catch (e) {}
   if (!/^\d{4}$/.test(code || "")) code = nouveauCode();
-  ouvrir();
+  // Liaison directe sur le réseau du lycée, sans relais : une autorisation micro (ou webcam)
+  // sur le poste du professeur fait révéler sa vraie adresse locale par le navigateur.
+  // Les élèves sous Chrome/Edge peuvent alors se connecter directement à lui.
+  statut("Autorise le micro (ou la webcam) pour activer la liaison directe…");
+  debloquerReseauLocal().then(ok => {
+    if (!ok) alert("Liaison directe non activée : autorise le micro ou la webcam (icône à gauche de l'adresse), puis recharge la page. Sinon, les élèves devront utiliser Firefox.");
+    ouvrir();
+  });
+
+  async function debloquerReseauLocal() {
+    for (const c of [{ audio: true }, { video: true }]) {
+      try {
+        const s = await navigator.mediaDevices.getUserMedia(c);
+        s.getTracks().forEach(t => t.enabled = false); // rien n'est enregistré ni transmis
+        window.__fluxLocal = s;                         // gardé ouvert pour conserver l'autorisation
+        return true;
+      } catch (e) {}
+    }
+    return false;
+  }
 
   function nouveauCode() {
     const c = String(Math.floor(1000 + Math.random() * 9000));
