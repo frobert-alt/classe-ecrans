@@ -29,7 +29,9 @@
 </div>
 <script>
 const APP = "https://claude.ai/artifact/36LJWKjuxd2tV4enDZUDDL";
-if (!sessionStorage.getItem("ouvert")) { sessionStorage.setItem("ouvert","1"); setTimeout(() => location.href = APP, 400); }
+const appli = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+if (appli && !sessionStorage.getItem("ouvert")) { sessionStorage.setItem("ouvert","1"); setTimeout(() => location.href = APP, 400); }
+if (!appli) document.querySelector("p").textContent = "Pour l'installer : menu ⋮ de Chrome → Installer l'application (ou Ajouter à l'écran d'accueil → Installer).";
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
 </script>
 </body>
