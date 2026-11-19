@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Conduite B C CE</title>
+<meta name="theme-color" content="#0d4d2e">
+<meta name="description" content="Grille officielle d'observation et de notation de la conduite B · C · CE – Bac Pro CRM – Lycée du Val Moré – Freddy ROBERT">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  html,body{margin:0;height:100%;background:#0d4d2e;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#fff}
+  .wrap{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;text-align:center}
+  img{width:120px;height:120px;border-radius:24px;box-shadow:0 8px 30px rgba(0,0,0,.35)}
+  h1{font-size:1.3rem;margin:18px 0 4px}
+  p{margin:0 0 22px;opacity:.85;font-size:.9rem}
+  a.btn{display:inline-block;background:#fff;color:#0d4d2e;text-decoration:none;font-weight:800;padding:14px 26px;border-radius:12px;font-size:1.05rem}
+  .sign{margin-top:28px;font-size:.75rem;opacity:.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <img src="icon-192.png" alt="">
+  <h1>Grille officielle de conduite B · C · CE</h1>
+  <p>Lycée professionnel du Val Moré — ouverture…</p>
+  <a class="btn" id="go" href="https://claude.ai/artifact/36LJWKjuxd2tV4enDZUDDL">Ouvrir l'appli</a>
+  <div class="sign">Freddy ROBERT — Professeur de lycée professionnel – Transport et logistique</div>
+</div>
+<script>
+const APP = "https://claude.ai/artifact/36LJWKjuxd2tV4enDZUDDL";
+if (!sessionStorage.getItem("ouvert")) { sessionStorage.setItem("ouvert","1"); setTimeout(() => location.href = APP, 400); }
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+</script>
+</body>
+</html>
