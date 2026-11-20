@@ -1,0 +1,750 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1F4E8C">
+<meta name="description" content="Parcours permis (ETG, B, C, CE, ARI) du Bac Pro CRM avec textes officiels et suivi des élèves – Lycée du Val Moré – Freddy ROBERT">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Parcours permis Bac Pro CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;1,8..60,400&display=swap">
+<style>
+/* Layout : le parcours en trois colonnes (échec | étape | option-délivrance) par année, et un panneau « texte officiel » à droite (feuille plein écran sur téléphone). */
+/* Thème clair unique, lumineux : fond blanc, bandeaux d'année aux couleurs vives du poster A3. */
+:root{
+  --bg:#FFFFFF; --surface:#FFFFFF; --ink:#16202E; --muted:#4A5568; --line:#DCE2EA; --soft:#F4F7FB;
+  --navy:#1F4E8C; --navy-ink:#173E70;
+  --fail:#E0611F; --fail-ink:#A8400F; --fail-bg:#FFF0E5;
+  --ok:#139A8B; --ok-ink:#0D6E63; --ok-bg:#E3F6F2;
+  --opt:#7B5BC0; --opt-ink:#5B3F9A; --opt-bg:#F5F0FF;
+  --info:#7A8BA3; --info-ink:#3A4A60;
+  --y2:#FDE5E5; --y1:#E1EEFF; --yt:#E2F5D9; --yj:#EFE7FC; --ypre:#EEF3F8;
+  --p2:#B42318; --p1:#1F5FB8; --pt:#3C8A26; --pj:#6A48B0; --ppre:#5A6B82;
+  --quote:#FFFCF2; --quote-line:#E2B33D; --sel:#F2B33D;
+  --f-display:'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --f-body:'Barlow', system-ui, sans-serif;
+  --f-law:'Source Serif 4', Georgia, serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--soft); color:var(--ink); font-family:var(--f-body); font-size:15px; line-height:1.45;
+  padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px)); padding-block:20px 40px}
+.wrap{max-width:1480px; margin:0 auto}
+header.top{display:flex; flex-wrap:wrap; align-items:center; gap:14px 28px; margin-bottom:14px; padding:16px 20px; background:var(--surface); border:1px solid var(--line); border-radius:16px; box-shadow:0 2px 10px rgba(31,78,140,.06)}
+.brand{display:flex; align-items:center; gap:18px; flex:1 1 520px; min-width:0}
+.brand img{width:104px; height:auto; flex:none}
+.brand .sep{width:1px; align-self:stretch; background:var(--line)}
+.tag{font-family:var(--f-display); font-weight:600; font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--p1); margin:0 0 2px}
+.steps{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px}
+.steps a{font-family:var(--f-display); font-weight:700; font-size:14px; letter-spacing:.06em; text-transform:uppercase; text-decoration:none; color:#fff; padding:5px 12px; border-radius:999px}
+.steps a:focus-visible{outline:3px solid var(--sel); outline-offset:2px}
+@media (max-width:560px){ .brand{flex-direction:column; align-items:flex-start} .brand .sep{display:none} }
+h1{font-family:var(--f-display); font-weight:700; font-size:clamp(28px,4vw,40px); line-height:1.05; letter-spacing:.01em; color:var(--navy-ink); margin:0; text-wrap:balance}
+.sub{margin:4px 0 0; color:var(--muted); font-size:14px}
+.legend{display:flex; flex-wrap:wrap; gap:6px 14px; font-size:13px; color:var(--muted)}
+.legend span{display:inline-flex; align-items:center; gap:6px}
+.sw{width:14px; height:14px; border-radius:3px; border:2px solid; display:inline-block}
+.layout{display:grid; grid-template-columns:minmax(0,1fr) 440px; gap:20px; align-items:start}
+@media (max-width:1180px){ .layout{grid-template-columns:minmax(0,1fr)} }
+
+/* Parcours */
+.band{border-radius:16px; padding:16px; margin-bottom:12px; scroll-margin-top:12px}
+.band.pre{background:var(--ypre)} .band.s2{background:var(--y2)} .band.s1{background:var(--y1)} .band.st{background:var(--yt)} .band.sj{background:var(--yj)}
+.pill{display:inline-block; font-family:var(--f-display); font-weight:700; font-size:15px; letter-spacing:.08em; color:#fff; padding:2px 10px; border-radius:6px; margin-bottom:10px}
+.pre .pill{background:var(--ppre)} .s2 .pill{background:var(--p2)} .s1 .pill{background:var(--p1)} .st .pill{background:var(--pt)} .sj .pill{background:var(--pj)}
+.row{display:grid; grid-template-columns:minmax(0,1fr) 64px minmax(0,1.15fr) 64px minmax(0,1fr); align-items:center}
+.row + .down{display:flex}
+.down{justify-content:center; padding:4px 0; grid-column:3}
+.down span{font-size:13px; font-style:italic; color:var(--navy-ink); display:inline-flex; flex-direction:column; align-items:center; line-height:1.1}
+.down span::before{content:""; width:2px; height:16px; background:var(--navy); display:block; margin-bottom:2px}
+.link{display:flex; flex-direction:column; align-items:center; font-size:12.5px; font-style:italic; gap:2px; text-align:center}
+.link i{font-style:normal; font-size:16px; line-height:1}
+.link.fail{color:var(--fail-ink)} .link.opt{color:var(--opt-ink)} .link.ok{color:var(--ok-ink)}
+.empty{min-height:1px}
+.outcomes{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px}
+@media (max-width:760px){
+  .row{grid-template-columns:minmax(0,1fr); gap:8px}
+  .row .link{flex-direction:row; justify-content:flex-start; gap:6px; padding-left:4px}
+  .row > .c-center{order:-1}
+  .row > .lk-l{order:1} .row > .c-left{order:2} .row > .lk-r{order:3} .row > .c-right{order:4}
+  .row .lk-l i{transform:rotate(-90deg)} .row .lk-r i{transform:rotate(90deg)}
+  .row > .empty{display:none}
+  .outcomes{grid-template-columns:minmax(0,1fr)}
+}
+.card{all:unset; box-sizing:border-box; display:block; width:100%; background:var(--surface); border:2px solid var(--navy); border-radius:12px; box-shadow:0 1px 3px rgba(22,32,46,.08); padding:10px 12px; cursor:pointer; font-size:14px; line-height:1.38; color:var(--ink); transition:transform .12s ease, box-shadow .12s ease}
+.card:hover{transform:translateY(-2px); box-shadow:0 8px 20px rgba(31,78,140,.16)}
+.card:focus-visible{outline:3px solid var(--sel); outline-offset:2px}
+.card[aria-pressed="true"]{outline:3px solid var(--sel); outline-offset:2px}
+.card .t{display:block; font-family:var(--f-display); font-weight:700; font-size:17px; letter-spacing:.02em; line-height:1.15; color:var(--navy-ink); margin-bottom:3px; text-transform:uppercase}
+.card .l{display:block}
+.card .r{display:flex; justify-content:space-between; gap:8px; margin-top:6px; font-size:12px; color:var(--muted); font-style:italic}
+.card .r b{font-style:normal; font-weight:600; color:var(--navy-ink); white-space:nowrap}
+.card.fail{background:var(--fail-bg); border-color:var(--fail)} .card.fail .t, .card.fail .r b{color:var(--fail-ink)}
+.card.ok{background:var(--ok-bg); border-color:var(--ok)} .card.ok .t, .card.ok .r b{color:var(--ok-ink)}
+.card.opt{background:var(--opt-bg); border-style:dashed; border-color:var(--opt)} .card.opt .t, .card.opt .r b{color:var(--opt-ink)}
+.card.info{border-color:var(--info)} .card.info .t, .card.info .r b{color:var(--info-ink)}
+.card.info.dashed{border-style:dashed}
+.rec{font-style:italic}
+
+/* Panneau */
+aside.panel{box-shadow:0 6px 24px rgba(31,78,140,.10); position:sticky; top:calc(env(safe-area-inset-top,0px) + 12px); max-height:calc(100vh - 24px); overflow:auto; background:var(--surface); border:1px solid var(--line); border-radius:14px}
+.ph{position:sticky; top:0; background:var(--ph-bg, var(--surface)); border-bottom:1px solid var(--line); padding:14px 16px 12px; display:flex; gap:10px; align-items:flex-start; justify-content:space-between; z-index:1}
+.ph h2{font-family:var(--f-display); font-size:22px; line-height:1.1; margin:0; color:var(--navy-ink); text-wrap:balance}
+.ph .k{font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:2px}
+.close{all:unset; cursor:pointer; width:36px; height:36px; display:none; place-items:center; border-radius:8px; border:1px solid var(--line); color:var(--ink); flex:none}
+.close:focus-visible{outline:3px solid var(--sel)}
+.pb{padding:14px 16px 18px; display:flex; flex-direction:column; gap:16px}
+.summary{background:var(--y1); border-radius:10px; padding:10px 12px; font-size:14px}
+.summary b{color:var(--navy-ink)}
+.src{display:flex; flex-direction:column; gap:8px}
+.src h3{margin:0; font-size:14px; font-weight:600; line-height:1.3}
+.src .loc{font-size:12.5px; color:var(--muted)}
+blockquote{margin:0; background:var(--quote); border-left:3px solid var(--quote-line); border-radius:0 8px 8px 0; padding:10px 12px; font-family:var(--f-law); font-size:14.5px; line-height:1.55; white-space:pre-line}
+blockquote mark{background:color-mix(in srgb, var(--sel) 35%, transparent); color:inherit; padding:0 1px}
+.acts{display:flex; flex-wrap:wrap; gap:8px}
+.btn{all:unset; cursor:pointer; font-size:13px; font-weight:600; padding:7px 11px; border-radius:8px; border:1px solid var(--line); color:var(--navy-ink); background:var(--surface); display:inline-flex; align-items:center; gap:6px; min-height:24px}
+.btn:hover{border-color:var(--navy)}
+.btn:focus-visible{outline:3px solid var(--sel)}
+.note{font-size:13px; color:var(--fail-ink); background:var(--fail-bg); border-radius:8px; padding:8px 10px}
+.start p{margin:0 0 8px}
+.start ul{margin:0; padding-left:18px; display:flex; flex-direction:column; gap:6px; font-size:14px}
+.start a{color:var(--navy-ink)}
+footer{margin-top:16px; font-size:12.5px; color:var(--muted)}
+.toast{position:fixed; left:50%; bottom:calc(16px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%); background:var(--ink); color:var(--bg); padding:8px 14px; border-radius:8px; font-size:13px; z-index:50}
+@media (max-width:1180px){
+  aside.panel{position:fixed; inset:auto 0 0 0; top:auto; max-height:82vh; border-radius:16px 16px 0 0; z-index:40; box-shadow:0 -10px 30px rgba(0,0,0,.25);
+    padding-left:env(safe-area-inset-left,0px); padding-right:env(safe-area-inset-right,0px); padding-bottom:env(safe-area-inset-bottom,0px)}
+  aside.panel.closed{display:none}
+  .close{display:grid}
+}
+@media (prefers-reduced-motion: reduce){ .card{transition:none} .card:hover{transform:none} }
+
+/* ===== Module « Suivi élèves » (appli installable) ===== */
+.card{position:relative}
+.sv-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 14px;padding:10px 14px;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.sv-btn{font:600 14px var(--f-body);border:1px solid var(--line);background:#fff;color:var(--navy-ink);border-radius:10px;padding:9px 14px;cursor:pointer;min-height:42px}
+.sv-btn.pri{background:var(--navy);color:#fff;border-color:var(--navy)}
+.sv-btn.warn{color:#B42318;border-color:#F3B5AE}
+.sv-btn:active{transform:translateY(1px)}
+.sv-chip{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--ink);background:var(--soft);border-radius:999px;padding:6px 6px 6px 14px}
+.sv-chip button{border:0;background:#fff;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:15px}
+.sv-next{color:var(--muted);font-size:14px}
+.sv-next b{color:var(--navy-ink)}
+.sv-sp{flex:1}
+/* surimpression sur le diagramme */
+.card.sv-ok{outline:4px solid var(--ok);outline-offset:2px}
+.card.sv-cur{outline:4px solid #E2A100;outline-offset:2px}
+.card.sv-ko{outline:4px solid #C62828;outline-offset:2px}
+.card.sv-dim{opacity:.45}
+.sv-badge{position:absolute;top:-11px;right:10px;font:700 12px var(--f-body);padding:3px 9px;border-radius:999px;color:#fff;background:var(--ok);box-shadow:0 1px 4px rgba(0,0,0,.2);white-space:nowrap}
+.sv-badge.cur{background:#E2A100}.sv-badge.ko{background:#C62828}
+/* fenêtre de suivi */
+#sv{position:fixed;inset:0;z-index:50;background:var(--soft);display:none;flex-direction:column}
+#sv.open{display:flex}
+.sv-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px max(16px,env(safe-area-inset-left));background:var(--navy);color:#fff}
+.sv-h h2{font:700 22px var(--f-display);margin:0;letter-spacing:.3px}
+.sv-h .sv-btn{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.3)}
+.sv-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 16px;background:#fff;border-bottom:1px solid var(--line)}
+.sv-tools select,.sv-tools input{font:15px var(--f-body);padding:9px 10px;border:1px solid var(--line);border-radius:10px;min-height:42px}
+.sv-body{flex:1;overflow:auto;padding:14px 16px 40px}
+.sv-tbl{width:100%;border-collapse:separate;border-spacing:0;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.sv-tbl th{font:600 12px var(--f-body);text-transform:uppercase;letter-spacing:.4px;color:var(--muted);text-align:center;padding:10px 6px;background:var(--soft);border-bottom:1px solid var(--line)}
+.sv-tbl th:first-child,.sv-tbl td:first-child{text-align:left;padding-left:14px}
+.sv-tbl td{text-align:center;padding:10px 6px;border-bottom:1px solid var(--line);font-size:14px}
+.sv-tbl tr:last-child td{border-bottom:0}
+.sv-tbl tbody tr{cursor:pointer}
+.sv-tbl tbody tr:hover{background:#F7FAFF}
+.pz{display:inline-block;min-width:34px;padding:3px 7px;border-radius:999px;font-weight:700;font-size:13px;background:#EEF1F5;color:#7A8698}
+.pz.ok{background:var(--ok-bg);color:var(--ok-ink)}.pz.cur{background:#FFF4D6;color:#8A6200}.pz.ko{background:#FDE3E1;color:#B42318}.pz.opt{background:var(--opt-bg);color:var(--opt-ink)}
+.sv-empty{text-align:center;color:var(--muted);padding:40px 10px}
+.sv-fiche{max-width:980px;margin:0 auto;display:grid;gap:14px}
+.sv-sec{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.sv-sec h3{font:700 19px var(--f-display);margin:0 0 10px;color:var(--navy-ink);display:flex;align-items:center;gap:10px}
+.sv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 14px}
+.sv-f label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.sv-f input,.sv-f select,.sv-f textarea{width:100%;font:15px var(--f-body);padding:9px 10px;border:1px solid var(--line);border-radius:10px;min-height:42px;background:#fff}
+.sv-f textarea{min-height:80px}
+.sv-tries{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.sv-try{border:1px dashed var(--line);border-radius:10px;padding:8px}
+.sv-try .n{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:4px}
+.sv-try input,.sv-try select{width:100%;font:14px var(--f-body);padding:7px;border:1px solid var(--line);border-radius:8px;margin-top:4px;min-height:38px}
+.sv-try.R{border:2px solid var(--ok);background:var(--ok-bg)}.sv-try.E{border:2px solid #E59A8F;background:#FFF5F3}
+.sv-chk{display:flex;align-items:center;gap:10px;font-weight:600;min-height:42px}
+.sv-chk input{width:24px;height:24px}
+.sv-alert{border-radius:10px;padding:10px 12px;font-size:14px;margin-top:8px}
+.sv-alert.r{background:#FDE3E1;color:#8E1B10}.sv-alert.o{background:#FFF4D6;color:#6E4E00}.sv-alert.g{background:var(--ok-bg);color:var(--ok-ink)}
+.sv-sub{font-size:13px;font-weight:700;color:var(--navy-ink);margin:8px 0 6px}
+.sv-foot{font-size:12px;color:var(--muted);padding:10px 16px;border-top:1px solid var(--line);background:#fff}
+.sv-modal{position:fixed;inset:0;z-index:60;background:rgba(10,20,40,.55);display:flex;align-items:center;justify-content:center;padding:20px}
+.sv-modal .box{background:#fff;border-radius:16px;padding:20px;max-width:380px;width:100%}
+.sv-modal h4{margin:0 0 10px;font:700 20px var(--f-display);color:var(--navy-ink)}
+.sv-modal input{width:100%;font:22px var(--f-body);letter-spacing:6px;text-align:center;padding:10px;border:2px solid var(--line);border-radius:10px;margin-bottom:12px}
+@media (max-width:700px){.sv-tbl .hm{display:none}.sv-tries{grid-template-columns:1fr}}
+@media print{.sv-bar,#sv{display:none!important}}
+</style>
+
+</head><body><div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANAAAAC9CAYAAADCzvPwAAAWfmNhQlgAABZ+anVtYgAAAB5qdW1kYzJwYQARABCAAACqADibcQNjMnBhAAAAFlhqdW1iAAAAR2p1bWRjMm1hABEAEIAAAKoAOJtxA3VybjpjMnBhOjU1MGVjODhjLTdmODYtNDRjMi1iMDE0LTFiZGI2ZGFlOTc3NAAAAAOTanVtYgAAAClqdW1kYzJhcwARABCAAACqADibcQNjMnBhLmFzc2VydGlvbnMAAAAAuGp1bWIAAABEanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5pbmdyZWRpZW50LnYzAAAAABhjMnNojVmfcIxwBKIH7LhQVFAnUAAAAGxjYm9yo2lkYzpmb3JtYXRpaW1hZ2UvcG5namluc3RhbmNlSUR4LHhtcDppaWQ6NWRlZDJmZmQtNGRmYi00M2QwLWI5ZmItZjJlM2YxZDBkY2RlbHJlbGF0aW9uc2hpcGhwYXJlbnRPZgAAAeJqdW1iAAAAQWp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuYWN0aW9ucy52MgAAAAAYYzJzaM1vLZXR/o+drs+CRCpRi34AAAGZY2JvcqJnYWN0aW9uc4KiZmFjdGlvbmtjMnBhLm9wZW5lZGpwYXJhbWV0ZXJzoWtpbmdyZWRpZW50c4GiY3VybHgtc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5pbmdyZWRpZW50LnYzZGhhc2hYIKX09lnlpUMkhz8RQbwhukRPxhwFtkpHUAJPyf+SMzVRpGZhY3Rpb254HWNvbS5hbnRocm9waWMuY2xhdWRlLnByb3ZpZGVkanBhcmFtZXRlcnOheB9jb20uYW50aHJvcGljLm9yaWdpbi1jb25maWRlbmNlZ3Vua25vd25rZGVzY3JpcHRpb254ZkNsYXVkZSBwcm92aWRlZCB0aGlzIGZpbGUgYXQgdGhlIHJlcXVlc3Qgb2YgYSB1c2VyIGFuZCBtYXkgaGF2ZSBjcmVhdGVkIG9yIG1vZGlmaWVkIHRoZSBmaWxlIGNvbnRlbnRzLm1zb2Z0d2FyZUFnZW50oWRuYW1lZkNsYXVkZXJhbGxBY3Rpb25zSW5jbHVkZWT1AAAAyGp1bWIAAABAanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5oYXNoLmRhdGEAAAAAGGMyc2jex3JXIZ0mFGcwYz3NpT6sAAAAgGNib3KlY2FsZ2ZzaGEyNTZjcGFkTQAAAAAAAAAAAAAAAABkaGFzaFgg+Jt0g/X2zA10gFeMvzOWwIMZ1hPvSmhOyIxdI2P8e61kbmFtZW5qdW1iZiBtYW5pZmVzdGpleGNsdXNpb25zgaJlc3RhcnQYIWZsZW5ndGgZFooAAAI+anVtYgAAACdqdW1kYzJjbAARABCAAACqADibcQNjMnBhLmNsYWltLnYyAAAAAg9jYm9ypWNhbGdmc2hhMjU2aXNpZ25hdHVyZXhNc2VsZiNqdW1iZj0vYzJwYS91cm46YzJwYTo1NTBlYzg4Yy03Zjg2LTQ0YzItYjAxNC0xYmRiNmRhZTk3NzQvYzJwYS5zaWduYXR1cmVqaW5zdGFuY2VJRHgseG1wOmlpZDo4ZmY1ZjNkMy0wNzdjLTQzNTItOTdlNC02MTYwMjBjMDNhMWJyY3JlYXRlZF9hc3NlcnRpb25zg6JjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggpfT2WeWlQySHPxFBvCG6RE/GHAW2SkdQAk/J/5IzNVGiY3VybHgqc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5hY3Rpb25zLnYyZGhhc2hYIA/WV9p0PziiDHDCCAZ5Xy57ghqRi6y5orC6AWfp2FCbomN1cmx4KXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaGFzaC5kYXRhZGhhc2hYIHsDb6Sc37Y8QujUOUHxHfMXkP73+zsDZtWQCDUgK4i9dGNsYWltX2dlbmVyYXRvcl9pbmZvo2RuYW1lb0FudGhyb3BpYyBGaWxlc2d2ZXJzaW9uZTEuMC4wa3NwZWNWZXJzaW9uZTIuNC4wAAAQOGp1bWIAAAAoanVtZGMyY3MAEQAQgAAAqgA4m3EDYzJwYS5zaWduYXR1cmUAAAAQCGNib3LShFkCEqIBJhghWQIKMIICBjCCAY2gAwIBAgIUQOWgCu7COdC+uIP6BkIFPWdVEwAwCgYIKoZIzj0EAwMwSTEXMBUGA1UEChMOQW50aHJvcGljLCBQQkMxLjAsBgNVBAMTJUFudGhyb3BpYyBDb250ZW50IENyZWRlbnRpYWxzIFJvb3QgQ0EwHhcNMjYwODA3MTg0MzU2WhcNMjgwODA2MTk0MzU2WjBEMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEpMCcGA1UEAxMgQW50aHJvcGljIENsYXVkZSBDb250ZW50IFNpZ25pbmcwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAASYegpry1AYBRTVNL1CpTlbROnY3dey+UrsF9C3phYrATN3ZHf93Mo8RQN0KOUuOn19P4oWNFWe5n2/She9N7eTo1gwVjAOBgNVHQ8BAf8EBAMCB4AwFQYDVR0lBA4wDAYKKwYBBAGD6F4CATAMBgNVHRMBAf8EAjAAMB8GA1UdIwQYMBaAFM5R4gSBTmRbI/jjxM+aPpzB11zCMAoGCCqGSM49BAMDA2cAMGQCMDFzHRSeAXrSy1WOzkbhPZ6Km2wGTmZ/2gK18k8BQGXyqz88Rdrz6CTX9flAnYNVxgIwcF9c3fVhqmJKpi+UhasNUMko69cyX6STPfta3Q8EjyzDjzoyrol46FP6VFHhvUcJoWNwYWRZDZ4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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a2Zmhr1797J7926OHDlCb28vx44d4+jRoxw9epShoSHXfN801epRNSlqkEwmyedz1NTEnfkTg3R6gX379rNnz27q6xOEwyF34jqVSgHQ0dFBwPHtNzs7y/79+9m2bRvHjh1Ty+2dFlc6a2MGBwcZGhpCSklzUxMNDfUUCgX6+wfYtm0bBw4cYGFhgVA4TDSiHYroSswmlVpgdnaWhYUFLKvk5P9i4TZNk/r6empra11nJXHHW1I8rgw/4/Go89t7LU4kolYKa+tqjVcikL6XyWadJf5qdwnvOz6f760lkBZEnYjt27fT39/P8uXLufbaa7Esi1/+8pfcfffd1Dp+1O6//36efPJJbrjhBkKhEOl0mmeffZbbb7+dxx9/nB07dhAKhejs7CQej2PbNiMjI9x77z387Gf3sXXrNqanZ2hoqKejox3DmUt54IEH+OlPf8oTTzzBkSNHkFKyfv16fD616rQy3QA/+9nP+PGPf8yvfvUrDh06RKFQ4NJLL+XKK68kGAwyNDTEL37xC2677Ta2bdvG/v376ezspLFRORCcnZ1ly5Yt/PM//zPPPfcce/fuJRQK0d7evqjW1/FJKTl8+DDf+973uOeee9i/fz/PPfccmzZtckm4des2YrEY3d3dhMMRt4t222238cQTT/DSSy85VszKpD+VSrF//z62bNnCyZODBIOqxcpkMvzkJz/hkUce4brrriMej7vrl2677TYefvhhXnrpJYrFItFIlJDjtmp4eJjHH3+cl19+GSEEq1atorOjk5GREe68807uuusuNm/ezPDwMLU1taxYsdypCF8bgXw+Hw0NDbS0tNDc3OxszajWHNU31FGfSJBIqHN11FNfX08ikSAeryHmOKz3+71Ly08PXRbpdJrpmRnm5tQKVK/8+ny+f58uXLmWL2eUFprZ2VkGBgaYc3wrj46OMjg4iO2YjRw5coRHHnmEEydOcP3112OaJt///vc5cuQItm0zPz/P1q1buf3227n00ktZv34927Zt44knniCVSlFyHAH+27/9G8Vikcsvv5xCocCdd965yEi1EsVikUcffZTx8XHWrFnDxRdfjOkYGOJ825YtW3j00UexbZsbb7yRPXv2cO+993LixAmEEBw7dpw777yTkZFR3v/+97OwsMBjjz3GSy+9dEq8unuWzWYZGhoim81x9dVXYxgGc3NzNDc3s2HDBoaGTnLvvfcwMzODYcDBgy/zwAMP0Nvbyy233EI6neGBB37B/v373fy2bTVfdcUVV3DBBRdQW1vj5vWA4yBFCMGJEyd4/PHHefHFF7nxxhtpa2tj8+bNHD5yxO2mDgwM0NvbS2trC+3t7YTDYRYWFti//wA/+MEP6Orq4m1vexsHDx7k0UcfYWJ8/IzNebxZIhwL6JqaGjo62lixYjkrVqygq2sFK1ascM+XL1/GihXL6eoq/+7u7qK9vZ1oLAZLdN+8pPDCdrpvxWLR1ah6YbzVY6BTUSaRcgShJl4DgaC7VNnv9xMIhJzJOcHs7ByZTI4LLriQL33pj3n/+99PIBCgUChgOV4uJyYmkFLy6U9/mo997GM0NTUxP58kk1HusrSH/iuvvJJPfepT/MZv/AaFQoGZmRmXEG4KnczVxpSrV6/mox/9KO973/vcWX2NyYlJbMvmmmuu4bOf/SyrVq1iZmaGXDYHElKpJLOz81x22eX8wR/8Ae95z3uoqakhm826XSJvvPpvKBRi/foL+KM/+kM2bryU5ctX8M53vpPf/d3fZfnyLvL5smW2doJ4wQUX8KUvfYGrrrrSGfcsuP14KSXhcJSPf/wT3HTTb9He3oHhGJ8GAgG3Kzw/n2R+PklHxzK+9Mdf4sb3vBthGOSyWZBq6bUAgoEAV155FVdcfjl1dQmSyQVmZmYo5Et86EMf5gtf+AJvu+JtmKZBJquWopwOZb3W4vyQjgJHj9nwEMxdQQOuxs/7rmEYCMM47RjMm/fe94oli1w+Ty6XI5/Pu7KgNYumz3yrCCSd+RXb+a0gBM56e+HOPXi1N3o2XCXccDVN6iMgEony4Q9/mP/9v/83GzduPMVyQFsTqHB0OnQmqftLWVBUwvBMphmOOYw2PK2EaZgEAyEikYjKZMOJW5QH3MIx9Py93/s9/viP/5irrrrqFPLoZzUMwyASCau5B8MkEAi6pk06PxTUD9M0icVi+Hx+J+xyratrYG21oMeWWpD0cyodyhIhGo0SDoYwDRPT70f4lCLBRGBKtZy1UCqSzeXIF/JKmeCUd2trC1/4wuf5oz/6HG3tbYu+1Ym4nMZXsVLQeSKljS211o2lD73VpG1j2RaWrcZuwvWHsDiuym8v5AtkMspFsFY0qXtKNe5/ywjkekzRhwOPp5dToVumcm2iv1dngBCwfPlyrrrqqkXuaPXf6elppqennS5Jeb5HzVirSbKZmVkWFjJOzVUO3/vbe45LwFN/G46KO5NR4RaLJQSGxymH+pZsNsvU1DT19Q2sWbOW1ta2RerdU+N0CCINJwv1TrkK5fyRbp7l83mmp6dd/26KaE5oHiJ539UCpK9pchYKBaYmp0kmU0gJfsdOTwCGBCEltmWRzeVJZzJkHYGTKFfFyWSKZZ3LWLtmDbFo9FRV9qLvLd9UpVWWDp9pkl5YYGJ8kpGRUUZHHIvskZEljxHnvrbKnpycJOvsGuEucfAkplJ+so4SSmsgNXQ+vWUTqYtRFgzt7u4UYrktkrdm9aJ80XSMKr21tS70hx56iEcffdRRk2sBwSGQye7de/jFLx5i586djvcbb3EtRmVttRRMwySTybJnzx7u/OmdDJ08SdFTcwWDqtU4fPgwd9zxY37yk5+yc+dO5ubmThuvhpppd55ZIinqu1TLVSwW6e/v5wc/+AH79u1zV/Dq506HyopCk2lkZIQ77vgxW7aoxY5+nx+/z++usXEeplgskM6kyeVzTlc8wFNPPcUdt9/O/fffz6HDhxftxXMqFsfv/UzpGNmOjY8zMDBAX28fvb399PX20de39NHb20tvbx+9fb0MDg4yPT1NPp+HRSW9dIZYjtFvOp1239GQjv1lMBh8iwjkOPwq+4zzQnfrZLmFWVw0LlT5lrNVVcSn2pYJoeYftm/fzpEjR6ipqXEdsWsYhsHx48d58cUXmZubo7u7m1gsjvAs4fbCW2t7BW3Rb8e9U+/xXrZs3kIsFqPT8dONhObmZi699FJM0+S5557j+9//Pvfe+zOOHj3qzpYvDZWeCvFedKZhGGp+a3R0lMcee4xsNktbm9LAqVam/Gzld+pz7zdJKV2/3hMTE3R0dNDS1EwoEChvwOvU6KViiYWFBQqFPE1NjVx55ZX09ffz6KOP8a/f/VcefeQR5ufmTyGqF5VVqT63bJuZ2VlGR0cZHhlmyFnno1qaVzqGGR4aZnZ2lnw+r8rP+62euDSEs1VleiFNJpMpv+dpnf1+P5FI5K0hkKodT639FJ30RfVXiLKjPfd8CYHGuec9NKSzVuN3f/d3+R//43/w1a9+lfe///3EYjGXcMVikSuvvJIvfvGLfPWrX+U//+f/TFdX16LwvfCmoTI9+ty2LaLRKFdddRV/8Rd/zv/6X/+Lz3zmM7S3d2BZNl1d3Xz+85/nb/7mb/iLv/hz1q1bx8DAAMeP90KF4J4KpwuxRFaoPFK/bVuZ2a9du5b//t//O3/911/jT/7kT7jooouXEBdVAnjysvI7Dcet75/8yZ/wla98hb/8y7/k6muuJhKNYujl0bYNUmn3MpkMuVyOlSu7+dpXv8pXv/IVPv/5/0QoGOTQy4eYmJhcIh2vDul0jTOZDGln42B9VFpnLzrSKRbSyiJbntZ1l4K+p7S5SXdjYu/4R+dJMBB46wgEiz1HlmGAO0YQbu2vHJOUC3IxQXTXrtx/rySRVgFfeeXbuP7667j++neyfr1a4GV5uhArV67kmmuu5l3vuoGrrrqSxsb602awvr4UWb3xhkIhVvas5MZ338h73vseNl56CdFYlFJJLchra2vhhhveybvffSOrVq1ylA3lsJaGwNaucD12ZfqvSoP6a9tqXVZ7ezu/+Zu/yXve8x6uvPLtNDc3ncK+032rTof+W19fz4033si7bried9/4LnpW9xCriRN0vNV4yZd3/EcXS0V6elbyrnddz4033khXVxc+v9KkqmgXK5ReCTqdWjuoFSx6jOY9X+qo/E7pCdNrg6plSn2DciSfc3zf6e8DCDjkicVibw2BpBRIW/uC8sAhylLZaJoGfr95irGg/kilbjXYunUr//AP/8ChQ4cqNCXK9GN8fJJ77/0Zjz76GPPz8xiG4fhMsPH5TEqlIi++uJPbbvshfX197vsaOj49iDQrtlr3Pqe6khaGIchkM/z0pz/hnnvuYXxsFJ/PpK+vlx/96Ec88sgjFAoFTFMAi5cP6LCWhEOSsrP0ituelkg4Wr9nn32GO+/8KQcPvuyGa7jqYK/vg8UVkhemaeL3mezfv5/vf//7HDp4iHAoTNjZukWVoo1pqOotOT/P9u07+Nu//Ts1hyclGKoCqKSsEDiaN0UoIbVltVO5SoG0JUIKbEsqpYz2ASyFU/me7hBK8eK2sk6cDnEqxREnH2ZmZpibm3O6o2pOzFveoVCIqDMx+5YQqNxV0IeClI7fYscAUF8rFJRh48DAAKlUEsMzQNB2TclkkiNHjvL4449z//33MzIygu040/A5m04NDg6yc+cLPPDAA+zcudPV5SvTGpiamuTQoUM8+eSTPPjgg0taIWvYjq2X3lBqaGiIYoWbYb/fhy1tpqYmOXjwIPfccw/PbXqOmblZTJ/awuTJJ5/kgQce4PDhw0xMTGDbNoHAYjV6mYxauLVQK+LYtrpGxVwJjrBLKZmdneP48eM8+uijPPbYYwwODrq1aLGYr1gHpOLURrFeogkhSKcXOHrsKE8//RQ/u+9njAwPE4/FiMVjBMJBSlhgqFbQEJDLZjl+7Bj33XcfmzZt4tChgyRTKUzTdFoh56N00l0B1d+ptGNqfkeTRP0t/9bnwu3cqEOoQ/8n3KfK47+Kik8dqvubyWSYmppibk7t86orN/2caZqEw2Fqa5R1w1tEIJYkkOuTTZQHt+3tbQSDQTZv3sS99/6MY8eOLzK/aGtTS3PHx8f5l3/5Dk8//TRNTU2uKUwkEqG7u5sVK1Zw9913c+eddzIzM01DQ4O70rOpqYkNGzZw6NAhfvzjH7N161ai0Sj19Ut34aSzqnPZsmVMTk7y4IMP8sQTT1AsFt05FICeVatoa29n7759fOc736Gvr4+mpiYijv1XTU2choYGdu3axT/90z9x9OhRli1b5o69vMLsJYYQTs9N56ChREhB+XzT77W2trJyZTcTE+N84xvfYOvWrQSDQWpqahBCrUBVXjpVJaPjCQaDJBIJNxwpJY2NjXR3d1EoFPjOd77DLx9+mEAgQEtzM4m6WuKxKP6gdlSIakmcMULAWW7+s5/dx+2330Emm2H16tUk6utVWWuiqAhVnF7XYh6f1VrAy2mrvLfEYdtINRHkXhNORbcY5XTkCwWmpqaZnZtnPpla5AZMIxKJKLu62loikchiWzhvLfjrgvSMGUZGRgDJqlWruOiiixBO65BMql3FJiYmmJ9PUldXxy233OJY2CrDy9nZGfr6emlqauITn/gEl1xyCVHHCV4kEsEwDLdbd/311/Pe976Xzs5OhNO1CwaDDA8PMzExQWdnJx/4wAd429ve5hKiMh8MQ/kLmJ+fZ35+HoCenh7e9ra3sW7dOnw+n+u6anRUzT1s3LiRj33sY3R1dbkGrvF4nOHhYQYHB1mxYgXve9/7uPzyyxctD9eFJoQgmUwyNTVFa2srV199FSOO48ULL7qQ9vY2RkZGaG1t4R3veAexWMz5tgDT01McPHiQ5cuXc/PNN7Nx40YiEeXMQzoLDa+++mrHAbxarq3NVq6//no1cRoOEwj4SSaTHDp0iHg8zoc//GGuueZqEokE6Uya0dFR5ubmWLNmDXFnqbphmASDIQKBAIODg8zPz3PZZZfxvpvex6pVq9xWRjgW8clkkvm5OfJ5NV/n9/hw8/lMfD615FwtPfdh+kx8prqm7ikfcKbPxO/4Tjf1fb+Jaaoyr3V21fPmA0JZKRSLRWZn5xgZGWV6eppUKnWK+Y5hGNTX19PU1ERzcxOxaFStSPUKtXgFrdebBR3f1NQUCwsLRByHFNKpvWZmZpifn+fFF1/i/vsfYHJykp/+9Kc0NipvPPl8gampSUZGhqmrq6O7u9vt1wtnUJnL5VxfdMuXLyeRSLg1ru4SDgwMMDs7S11dHZ2dnW7XT9/XeaKbccuyGBsbczM3EAi4FsLKQsBgYWHB3fOzq6vL/S6c7lWpVGJ8fJyTJ0/S2dlJS0uLa/ms894tXGfZxPT0NACtra1MTU2Rz+epqakhEokwOTmJZVm0t7e782HFYpGpqSn6+vro6OigtbXVbRGEMwk9PDxMwtmNTX93LpdjaGjItcY2HVu/mZkZBgYGiMfjdHV1EYlEsG2b6elpDhw4QG9vL5bjtUib0ujySKfTJBIJNm7cyKpVPYTDZc+gwuN5aWxsjLyzz5KeeHYWgaNRFuZyi6RaYt08K22gblHU+2psZZrKt3ZHR0eFYxFl0Do7N8fQ0BCjo6OMj48vIo+W10gkQkdHB11dXTQ3NRIKBRGlUkkKjxbFS6Y3CzpMLzm1IC8lNPr6jh07HEPRo9x99120tLR4tvMoh68F3Asdn4asWCXqjX+p+5WQHk83ldDxe9/1huv9i/N9GprU+vnKPBJOhaCvee/rcx2O95o3LXps472n06Dz3fuOtywqw/LGnc/nmZqa4uTJkwwNDZFKpZwFeuUKKBgM0tzcTF1dHa2tLbS2trgtnuF4VFJOQZQPcMNQnogq80/BW86iTBS3UtT55nnMeUdXeLriKX+3wezsHMMjIy55ChVruaTThW9ra6OtrY0VK1ZQE4+pbqv2ieBNtMZS194IThfeUgVnGAb79+/nvvvuY2BggG984xskEgkMw3QG1YDjZtcbhg5HOIJWGd9S17zx6/e80AXkva7feSXSvRIqv/nVwhAePwbqWTUo9uZXZbp1mFo7qSuMpb4R53l9/XS/9TkehyUDAwOu8OVyapt7HQ9AIBAkkaijubmJlpZmmpubCXi8CkmPlvPV8mEplOXh9PDmkzfvp6dnGR8fd3sNC+m0m5f6OdM0qampob29na6uLuoTCWfHBomwvRum/DvB+0Hea8lkkrGxMde6WCkTyjklTmM18Frhjb9SWDSWulYJb+G/2vNLxVN5rVKYlMW1Llh9lOOqjL9UUpYB4XAYn7POqTLMSixOg9KM8QrfY1kWs7OznDhxgrGxMebm5p2xTDken2PlXROP0drayooVK4hE1Dj0dC3h0vEtde3031OZH/qadHb1mJ2dc3YHn2BmZoaFhQXsCjIahkE0GqW1pYXOzk7a2toIBsvO5oVcOqVVVEBKyZ7de9izZw+mabLhkg1ccsklFAoFnnzyKU4MnKC5uYlLL72UnlU9la+fEdLpNPf//H6KxSLvvP6drFy50iMEqpgWk6VMoCefeIre3l7q6mq5ZONG1q9f57YQwWCQrVu2smvXLtrb2/nghz7oWqBXYikCvZKIaGE8fryXqalpkqkkqWSKjGPEKrT/B4dI9YmEMzZsxO8PEIkocisCndqaq1M95lmqcinnA0sQ3UtK4Yz/ss4q06mpGSYmJpidVatNLdt2tvpUraEhBJFImIaGBrfrFg6HnbBU+OZf//Vfv2UrUs9tCLZu28ZP7vgJu3fvobGxgcsuu4x8Ls8//sOtPPTQLykUCvSsWsmKFSsWFdqZHnNzc/zd///rbN60hba2VpYtW+ZZgqwERT9bWfP+8Ac/5L6f/Zz9+/YTjUZ529uuwHCWXhw6dJjbf3QHd911D/Pz83zgdz6waAmH98ARTnU4MS/xnPd5w1EYSFD7xTqCqruOunWxtA8Ky8IfCJBeWHC6X9pqoBymjtf5tahV8D7jXHH/CreLW9nqKD8UydQCU1NTjI6NMTU55ZJHdcUNNyiB2oqmrq6W5uZmWltbSCQSTvg6Xld9UcWrQQhoqK8HIZiYmGRyYgqcMdCJgQHmZuepr2+gqbGp8tUzh+NGd3x8nD179jI0NFT5xJIQjvV5LpfjyJFjPL9jB1NTKn0A9993P9u2bVeWxbmc+86pgvjaocNpa2ultaWFRJ1aXt3Y2Kjm3RzzG418Ps/Y2BiDg4OcHBrixOCgq9ksFJTzkcXQlcVi0i6+7zlz14+Vn7Usm3Qmw8TkFIODJzkxeJKJiUkmJidJZzLKUkIINU0tbYRjrlNTU0NDQwNNTU3U19d74ijHWSXQGcK2oaOjk0gkwsLCAvPJeWxnodb42DjFQp7W1haaW5oXvZfP50ktLKi5rXnnSCZZWFhQa2Y8ihOveY7t2cDqtUAIOHFikF/+4mEActkcR44cUUupK2XTge6GpVIp5pMpks6Ry+UWpcFNp5Tk8wVSqRTJZJJUaoFMJkN9fYJlyzpobGygJh6ns7OTQCBAsVgkl8uRy+UoOF5iT5486a7TOXHiBP39/QwPDzM/n1y0M3r5qBy/CUd8y9cquSWdtVcTE5OcODHIiRMnXJX5xMTEItMvnPgMx31XIlFLY2MDra2tNDY2umM1Ha5GlUBnAOm0DN0ru4nH4+RyOebn55mbm2Nqcgpb2pg+Hw0Nak5IvaMy+dv/9M985EMf47prb+C6667nuutu4Prr3sXHf+8THDhwAJyCk1J6rAteO7zWcQMDJ7jvvp9TLBb5xtf/nsOHDyuinoZBUkq2b9vOzb/zQa77jXdy3bXXc9217+Tv/vbrDAwMLCI5QDab5cc//jHvefd7neev47/+2X/j0MFDRKNRli9fRnd3F/l8nrvvuod/uvXb/OM3/5Fbv3krd991D6OjowAUCiXm5pKMjqnd+gYHB901PCMjY8zPp8jni+4esEKYGIYPIdR8k+r2lQ1GVTetSDKZZnxsioGBQY4f76O/v5+hoSFGRkaYmJhY5F3H21JJCT5/gKbmZuobmujo7KSpqcnt7i5VoVUJdAYQAkxT2bo1NjYQi8bILGQYdWatbVvS3Fw2J/LW1K1traxbv5YNGy5mw4YNrF61CpAcPnSEBx/4BUePHPVEVP75WqDJJ4DLL7+cd73rBiYnJ3n2V8/y9K+exrZtampr8FU4rNd47NHH+PrffZ3RkRHWrV3LxRddSCgU4uFfPsLtt93O8PCI+6yUkod/+QgP3v8gyfkUHR0dXLxhA90ruwhH1BJzv9/P3Ows//rd73Lo4EFaWpq46KKLWLa8k7m5WZ58/HFGhocplYpYVolcLsvc3DxjYxMMnRxm6OQIA/2DHD/Wx/HjfQz0D3JycITR0XEmJqaYmpphamqGyclpJienGR0dV+8MnKSvd4De43309fUzMDDI4OCQuxo1nU670w5l0qjKwTRNYrEozc3NNDY2snxZJ/UJtaeqt0wrUSXQGUJneGtrK3WJOtKZNMPDqkazbZum5mbXlMdbQNdcczWf+cyn+OKXvsAXv/QFPvmpT9DT00OpVGJ4aJhkMrko/NcD77sNDfW0t7czMzPDd7/7r5wYGOR9N72PSy+77LRxnDw5xMsvHyISifDZz36GL3zpC2zceAmpVJKXXz7IQH+/+01CCEZHRxgbHaOxsZHf/sBv86UvfZHf/sBv09ysuq9CCDKZDLte2sXCwgLvfveNfOx3P8rV11xDPBZndHSMsbExSqWiaz9XKlrksjmSyRSTk1MMD4+o8crACfr7B9xjYGCQgX7vtRMM9J+gr+8E/X0DDAwMcOKE8lM3PjbO3OwcmXSWYkE54RQ4VtxSgFR1VjAQoLamhqamJlpbW1i+fBn19QmCQWUhosmzVP5VCfQa0dbWSqI+oZyODw0xPj6BZdu0tDQTi8crHycWizMzPcOxo0c5fOgQvb29JJNJpbVaYo/T1wunPqVQKFBbV8slGzewffsOisUi11xzDT09PRUz9GUojZlFKBziirdfwdVXX0Vbext+f4BcLsfs3GzlK+Bsebn+gvVcffVVXHDBBcQ932/bNpl0Bilt1q9fz2/8xju4+OILqa2rBalWr0p3E+KyRUrJ2QtqIb3A/Pw809MzjI9PMDIywtDJIU4ODjI4OMjgifIxNKR2pBsbG3MtqRcWFshmsxQd77XaOltbB0mpluBHIhHq6upobm6mo72Njo52GhvKLc+roUqg1wAppTJLqa0jnU5z8uRJxsfHsC2b9vYOampq3OeklJSKRZ555hn+8R9u5atf+Rp/9Zdf4Rtf/3v279+vClaV5ZsEAQgy2Swtra188lOfxDBMrrjicjo6213r69eK06ZPRfeqkNLxKppI0NDQQNCx16utrSPgDyq7N49FBQJ3QaVllygUcmRzGRYWUswn55mdm2F2boa5+Vnm5ueYm5tjPjnPQjpFJpsmn89h2cqhiRDK4t/lja0iMB0/GrFYnKamJtra2mhvV0dTo9ox0NviaiItRagqgV4DhBA0NjYSr4mTyWQcLdIItm2xbNky6hwFgnAGnPPz8/zTrf/ESy/tIhgM0dbeRnNLkzMZ9+ZmvVeDl0jUcfFFF9LW1sL/73/+NRdeeIHbQr0qzuCR1wIhBPNzc4xPTDA7M+ssJDRIJOqIxWL4/d6aXqlCSrZV3v3ccJZvmEI5ZBR6Za5DDGGr+86hFHNqcZAUEomtiKNewufzE43GaGpqoqOzjfb2dpYv76Szs8P1hisrTKv0+VLjoDe3FP8DoKW1lURdglw2x/j4BONjynJ3+Ypl1CUW77+ps1sIwX/6/H9i0+bnuOvuu3jXjTcSDKn+9ZsNXfBt7e1845tfp6enR+3cp+5WPP3qcOreystuV+jVIflf/+t/8+EPfpi//tpfs3//AQRKIdPa2kRbezMNDfWEw2GkVHM2yt5RadWWgle4TyfYOIJv2Sr5gUCA2toampub6Ohody0LVq7sdndOtJZ02L+YTJWtUJVAZwhdRo2NDdTUxskX8kxOTDA5OeUuxguFQqdksEYg4DgndExXln7qzUM4HOayyy7zrDM6wxgrHlOfvYSAilOfXQpCCuLxGhoaG2jvaGf16lWsXbeG5uZmVjhueTuXddDe0UZrWwsNDfWuA0lNDj0nprugldfUeFIJuz4MwyAUClHnkKa9o5XOZR0sX7GMru4VrFypzIkCgfJiTS9x9HlleVZ2g6sEOkPoAb/f73fWANWQyWQYHx+nsbHR9RJ6tsAwDGKx2KLu0b8HpIAPfugW/ut/+6/8xV/8OX/5V3/Bf/1v/4Xr3nktHR3ttLe30tW1gp6elXR1raCzs4O2tjZaWpQ6OZFIUFtb6zqHDzpbzutD+9rTK0Xr6upoamqipUUtnejsbGfFimV0d6+gu3u5M9FbTywexe8vb934Sq2M91rlvbOnxM9ySM9At6GxgYaGBlfT09rW6qo8TwuP/C7lEOTXhcoCXxrCmcV3RtuLGpfTNDWv0oXz3rrwwgu57tpruf6G67n+huv5jWt/g66uLkKhkLNStIampkY6Ozvo7u5iZY86urpWsGzZMjo6NKnUzgzeo6WlxSFLK+3t7Sxbtkw5ne/uonulOpYtX0ZrWysNDfXEYlHHB4VHcXEGON2zVQKdIbxm940NDSTq60mnsxiGoKOjg1BQdZW83YhThFc6THyLIYSeZj1DeJKo6PMa3j0F5cAmJibYsX0HTz75FMeOHV/ksDAQ8KsxSlMj7e1tLFvWyYoVy+jqWkF3dzcru7vV35Ur6enpcY+VK1eWj+5uuru6WL58Gcs6O+lo76ClpUUt43Z2D9dlo7t9bxRVAp0hhGPlK4Qg4RhLgrI+7upSZu7eAqnsFszOzTFwYoDh4WHS6fS/B4+WhBovqAqiWCwwNDTEwIkB5ueT7jLtJVvX0zVMnjGIcsBvMDk5yYnBQZ568mn+5//9//DlP/0yTz7xJGln8Zq3cgLwmz6i4QiJujpamptodyzTu7tWsLK7i+6uFXR3dXmOFaxYvpyOjnZaWppoqE8Qj0UJBYMYwoAKU6Q3E1UCnSG8g8f6+nqam5TVtWmarFrVQyisFAhe0mgbLYB777mXT33i0/yX/+u/8fz250/xt+xiCaF8U/AK4SpnJzHGRsf44y/9f/jMp36fRx5+lPn5JE1Njaxdu7bylSWhWxMhBOFQiNWrV2OaJrf+46187g8/xze+/g0OHz5MKBTiiiuucNfWUNHV1C1EWUFgOzsiCGcXPhOfT/kN9Pn0MgjVp6xUKlQO+r3xndJDeB2oEugMID0+0wBq62ppaW0mHo9SU1PD+vUXEHM2b9IwDIOamhr+6it/ybXX/QZCwNzcHKlUEtM0iMWihEMhTGf5sBa+cDhMLBYlFAxhiPJepK+GYChENBYlHA7hc7oqeFqEQMBPPB4jHImcIjg333Iz//P/+b+54IILmJ6eZmJiEtM0+KPPfZb//j/+m7slSTmsINFoVC1X8C3tJ6J7ZTff+vatvPvdNyKEYHJyiny+wNXXXM2t37qVizdcRChUdjDyat/pJUTlt3kPjTeLIK+G6orUM4T20mI47q2Gh0c4duwopunj7W9/O6GQWp4sHNWrPpLJJH19fczNzrlh6Sxvampi+fLlyrzF2Xh4//79JJMpdwlxTa3y5+Z9T3pqen1+8OAhpqYmiUZjLF+2zF1WoWvgY8eOc/LkIIm6BBsv3QieFlJKtQ3JsaPHlJmRVF5s1I5vyxeZtUgpGegfYGhoCH/Az+rVqxd5ufE+VyqVOPjyQWZmZ5UPPcOgvqGe1atXL2p9fp3QefXrQpVAZwhNoMrC8NZ8+r73mr7u/avfOxNUxofn3VcjFkt4DNJ/bY/7LioE7XTfVHnfe88btn5G43TXzwecsVMRb0adCV7r878eKL9jlmXh9/vw+7X/tddekF4hWep3JbwCVwnhbhC29P3Xi6XiXOramw1vHGeaP+cLXL9wr4bTZYZcwuUTr/B8JbyZ/WZChWuQSqXI53PO2CIOjleb12oJfTqhfyPpr8wjLYiV118Nr/b8UiSqvPZqcZ/u+unwauH9ulH5fb8unLFn0teToMqwziSeM8WZpEdKtdeqUL7KkY7LIhXtqQQ6kzAr8Xq+47XGIzzkfS3xvVI83jAr8Wpx6Hved5eKa6nnzje4jhWrqKKK146qGruKKt4AqgSqooo3gCqBqqjiDaBKoCqqeAOoEqiKKt4AqgSqooo3gCqBqqjiDaBKoCqqeAOoEqgKZIXxayXUvTOzJtBhvVqY5wuqBDoLUSl4ledLQZvLnMmzXpxO4HO5nGuI+2phVr5r2/Yrvnc+mfZUTXnOIVQK3lICqq95n60kl7Z1y2az5PN5fD6fu5FXPp8nk8kwMTFBNBqlqUk7glwct9deTtvU5fN5isWiZzm3st3zHkul+VxGlUBnObyC5yWCFkTvmh69WtMrsBpLvfPCCy/Q29vLqlWruOKKK0ilUmzatIm9e/cihOCaa67hiiuuIBKJLIpHQ4enfSe8/PLLnDhxgubmZq644gps23Z3NtfPnm8EMr/2ta9Vt3g8i6E3o9q0aRMnTpzA7/cTCoUwTZNiscj4+DhPPPEECwtpIhG1pFtKyfz8PNu2bWP//v3kcjlCoRChUAjLskin07zwwgs8/PDDjIyM0NnZSXd3N6VSidnZWcbGxlizZg0XXnghiUSCUqlEJpPhxRdf5OWXX6avr49jx45x8uRJDMOgrq4O4WwKXSgUiMeVz2mcruCWLVsYGBjANE13/6TzBVUCncUQQlAsFpmcnGTv3v3s3LmThYU0DQ31JBIJhoaGuPPOu+jt7WXXrt3U1NTS0tKC3+9jYWGBAwcOcvDgQfbt2088XkNnZyep1AI7djzP/fffz+joKMFgkNWrV7Ny5UpSqRS//OXDjI+Pc+LEIIFAkNbWVvx+H0NDw3z7299xtp/cw/HjvUxMTHD06DHe/va3YxgmBw7sZ8+ePUgpWbduHcVikfvvv58XXtjJ/v0HlA+91pZFuzic6zi1Xa7irEKpVCKZTDE0NMSRI0fp7+8nlUohJczOzrN37z56elaxZs0a4vG46186m80xOjrKwMAJDh06zOSk2jM1n88xMHCCXC5PV1c3tbW1routbDbPgQMv09bWzsLCAkNDQ25cmUyW4eFhmpqaMU0f4XCEuroEx44dd3eQS6UWmJycYn4+iRACy7J48cWXME0fhUKBkZERpqenF3Utz3VUCXSWY2Fhgb6+Pubn56mrq3Mcr6t7pVKJYrHIhRdeyM0338y6dWudPUlLTE1Nc+jQIWpraz0DerVyuFgs0tzcTFdXF7FY3BkfgW1b7oZffr8fwzDcTX+FEEQiEdauXcvy5csdJ4fd4I5r9NjLcHeekBLHB57E5/NhGCavY4eVsxpVAp3lmJmZ5ciRo8TjcS677DLi8fgiRyG6m1dTEycajeDzGRQKeaampujr6+Pqq6+mubnZ9cAjHM9ClmW5amp1TR8GBw4cwOfz0dLSQiwWdd+xbVttU+8Qt1AoOit8LSe1ikgaQoBpGvT19VEoFGhubiJRsYPFuY4qgc5yCCHcLddramowzcW+4qTjk2J2dpaFhQUsy8IwDEzTpKamhrq6Ovx+P7brcLD8jt+vdibQ2jvbVv7vrr/+ej73uc9x7bXXOttWKn9smkTqeeXsUBGorGHTrZE+z+fzXHbZpfzBH/wBv/3bH6Chobxd/PmAKoHOcpimai1efvlldu3axdzcHNJRVft8PkzTZPv27fzd3/0dW7ZsJZPJIhy198TEBDt27HD2Iy1vHW8YBr29vezZs4epqSlH6NXObZFIhN7eXv7t3/6NJ598kvl51aUDSSaToVQqUSgUKBSKFIsWuVzB46ZYYFk2pVLJTWM8Hmd0dJR77rmHBx54gLGxcf3weYGqFu4shhDCGbCHyGazRKNRLrjgAtasWeO2RjU1MSYmJujs7GTDhotpaWlxiKWI5/P56OzsZOPGS2lra8MwDMLhCNlslnA4zKpVq7joogtpamrCMAwaGxuYm5ujvr6eiy++iK6uFZimSalkYVklNmy4mHg87mxN0kYkEuHSSze62yLG43GWLeuko6MD4fgRT6fTRCIR1q9fx9q1a9yW73xAdSL1LIdlWSwsLHDy5BClUonGxkYaGhoIh0MUi0Xm5+cZHByktlapsPVO4fl8nqGhIdLpDOFwmJaWFmpra7Asm1wux8mTJ8nn89TW1tLY2EAsFsO2bdLpNAMDAwQCAXdnA+lYLYyPj1NXV0cul3P3GU0mkyxfvhwpJblcjnQ6jWma1NWpsU4ul+PEiRPYtqS5ucl1yn++oEqgcwDiFUx4Tnev8nrlPe/9SguGyuf1b33vdGHr62eSvvMFVQKd45Cv07GltmLI5/OEQiF3F7hKokiPoam2k4tGo+7WkfqZpcjzHwFVAp2F8AqkPtcaMCpq9UrhrazxlyKSbduMjIzwk5/8hMnJSZYvX85VV13F29/+dvdZrzN9HcbQ0BB79+7lggsuYOXKlUjPNiQ6Lv0OTnrU+EkpFQzPXkDnC86vrzlPsBQJbMfiuVIAva2Pt+XQf5cilZSSyclJ+vv7MU2TsbExnn/+eZcspVKJAwcOsG/fPqamphDOXJNhGNTW1hIIBJBSaeV6e3vZsWMHe/bsYefOnbz88stMTk66abJtm2PHjrF3716Gh4exnJ2w5XmyXqiqhTsHoEmwVGuyFEG8ON07Y2NjHDt2jJ6eHtdS4aqrrgLg0Ucf5ZlnnuH5559ndnaWjo4OotEo/f39PPvsszQ1NdHZ2UlfXx8//vGPOXz4MM8++yz9/f3s2bOHyclJVq1aRSAQYOfOnTz00ENs2bKF6elpV9lxut0uzjVUW6BzAFrIykQQznFqa6Vx6juLYZom6XRa7V00N0ckEnHvHTx4kHg8TjgcZmJigvFxNXeTy+WYmpoim1VzTblcjunpaXcHu46ODkKhEFNTU64Jz9GjRykWi1x00UWsX7/endQ9XbrONVQJdJ7idAKqiWUYBplMlvHxCVKpBXfrF4BMJsPs7Cyzs3Ok0xlKJW2qI7BtZTen4ff76erqoq6ujo6ODhoaGhx7PQkIDMNkYSFNsVgkHA4TjUZftdU8l1Al0DkJ6RyvH7ZtEw6HaWpqJhaLUywqSwUAn8/HyMgYti1pb+8gkah3drZQhqKVsq/HNeqvRAgDwzAxTYN169bR1NRMX18/e/fuI5lMumOt8wFVAv0Hg26ZLMuirq6OtWvXUl9fTyaTdp8plUqsXbuGD33oQ9x00000NNS7Nm+V3S+thfMqBtShuokrV/bwiU98grVr1zE0NMyRI0dcAp0PJKoS6DxHpZDqc9u2yWazZDIZxyq7vM7A5/OTy+XZvHkzjz76KBMTk+47pVLJVVtri27btikUCq6VdrFYREplub158yYeeOABBgYGCAYD7vzR+YKqFu4/KAqFApZl0d3dTX19Aw0N9axevQohBDU1NYyOjmHbNuvWrePiiy/C5zPdbtmqVatoaGggl8tRKBRYs2YNhqGux+M1NDc3s3JlD5FIlGg0Rn9/P7lcjgsvvIhrrrnaNTc6H1CdSD3PcTo1dj6fZ3Z2lmAw6HTBJA0N9UgpKRQKjI4qC+5EIkFDQyNCKC1cKpV0t7jP5XLMzMwQj8dJpVJEIhF3LKWWUQQoFouMjo6Qy+VIJOpoamo6ZUnGuYwqgf6DYik1t+X4ctOW1fq+1rwJAYZRNu/R4xjpsZTwXlPvVKrbzy9xqxLoPzCWIoI+X/wMgECIU1sy/a4+Z4lxV/l9RcLzCVUC/QeElyz6fKn7niuAQEplPfBGUUnScxlVLdx/EHjJ4u1qVbY2ONo2tYu5fkfdX6q1OR0qSeJ973TkOd31sxlVAp2FOJ0gLTYkVa3CUvC2LlQIvj5figA6fHW/klhKdX26VqsSXqJS8d7p3l0qTWc7ql24cwBa4DKZDIZhOC6ilMsp7UkHz8I4LYj6ell41XhEh+cVZP3eUvc04ZZa4qCdmHif1fe8pDlT4p1rqBLoLIYQgmw2y9jYGL29vWQyGS666CI6OjoIBAIuYebm5hgaGnJt0TQR9KG0a7pLpghYKdxe8nh/z8zMMDo6Sm1tLW1tbZimycjICJlMhrq6Ourr67FtG5/PtyjdOIT2kktPwJ5PJKp24c5yqDmZUfbt28fs7Owi4QZIpVLs27ePp556itHRUXBMcdJpZcC5sLBAsVh0VNGqW5VMJpmfn8eytJGoemdmZoaJiQlyuZzb2oyPj7Np0yaef/55stksAHNzc4yPj7OwsOASpFAoMDc3RyaTccmJ4xhyamqK+fl5SqXSeUUeqgQ6O+FtCSzLcrchqa2tIxRSW42USiWmpqZ44YUX2LRpM/v373e9ik5NTbFr126mp2d46aXdjI9PuAafExOTbNu2ja1btzIyMkI+nwcgmUyxf/8BNm/ewoEDB0ilUuAQ9PDhw2zevJmpqSnHoWKBbDZLoVBwCX348GG2b9/O/v37mZ6eBqfF2bdvH5s2bWbr1m0MDAwsIu35gCqBzlLoWlyv2Tly5Bh33XU3u3btJpVaIJvNsmvXLr71rW9z6NBhcNb4mKbJ4OAgd955J/39A9x+++0cPPgyxWKRubl5tm3bzve//wN++tM72bx5s+urOplMsmfPXh555FF++MMfMjg4CI5lthCC4eFhZmdnsW3b8Sm3l9HRMQCy2Sx33nkXd911D/fccy87duxACEGhUODnP/85P//5z/nBD37IY489ztzcXIUy5NzG+fMl5xnKY5BZhodH+M3f/E26urqYmppibm7OcfCRpaGhgU996lPU1ze463Sk42Dedo0/1bX5+Tmmp6fZsGEDX/7yn7Jy5Ur8fj9Sgt8foL6+npqaGqanZ8jlVMtkWRaxWIxbbrmF9evXEwqFKJUsikVlVGrbNpOT02QyWd71rnfR2trGyZNDrgbOtuGmm36LjRs3IiUkkwvezzznUSXQWQitHMBVJOTYunUrhw4dIpfLuVow7ZtNOSpcemwhPMoETUohBGvWrGHDhg0kEglyuRzHjx9ny5YtdHZ2EgyGEBXKBdM0Pdq3cth4Wkufz+e2WBrSMQ3S73ufPx9QJdBZijKBQPumvuGGG7j00o2u00IhygTxvidlWb1dKeQ4BA2FQsRiMfx+PyVnA61SqcTFF19MJBJZZHIjnXVAGsqkRx/6WvmFxb/dn875+UMeqgQ6O1FJCNM06ezsZPny5cTjcUzTcLtpxWKBXC7nuo7S7+i1OqVSyTUSlY5j+WKxyLFjxzly5Kjj+7rcguilBnpbE02eSgLatlp9qsMslUruHqnqWfUN+l31Vzm3937fuY4qgc5CSI+qOhQK0dCg3OEeO3aMqalpisUSpmm6ywWOHj2ClHo/UtXdshyH9MJxQi+EIBQKUlMTJ51O89RTT/HyywdJpZIYhuoKWpbFvn37KJWUCyscnweRSMT1Zy2lJBQKEQ6rfVMNQxAOh4hEIoyOjrraQgW1s4Rpqp0gfD7/eUUeqgQ6e6EFrbm5mUsvvYTh4WHm5maJxSKEQkHC4RCdne10dLRz+PAhli3rpK6uFilt4vEYbW2t7N79EqtWraSzs51gMEBDQwPr168jGPQzMNBPIlFLNBrF7/fT2trKsmXL2LVrFx0d7cTjMQDq6+u56KKLaGlpcawfbLq7u1m3bi2JRB2madLc3MRll13K3NwctbU1XHzxhYDENA3Wrl1Dc3MTK1YsY9myDncP1/MFVUuEsxRqsF4umkKhgN+/uAYXjr1ZsVh072nNGE5r4W059DslZ6sT3TJ549Fh6VbQe191AxdbLOgwhRAUCqrl8vtVuJXKkPMRVQKdI6gUWu81fd17TzpjJ/17qb+V8zGVQl5JFi+pvNe8z3nva1X2UumsjOtcRZVA5wjEaSyoWYJclmVRKpUolUqORk21BoVCwfXPhjPx6hV8Ldini+d00NYFRcf9byAQcMM5n8iyFKpjoLMUWoi9NXhl7a5reA39O5fL0dvbyxNPPEEulwPH1k278620SfP+9nYBvfFR0crpe8KxzjYMg6NHj7Jnzx5GRkbcZ7QqvTKs8wVVrzxnKbSw5fN5xsbGOHLkCNPT05im6Y5d8vk8w8PD9PX1kU6n8fv9BINBFhYW2Lt3L3fddRc9PT0kEgkATpw4weDgID09Pa7WbXx8nKGhIRYWFtyWCWB8fJyBgQHGx8cplUrEYjGE05KNjIwwMDDAzMwMhmEQjaqNiLdt28bx48cJh8PuplvaFEk/GwopJcL5QqYqgc5yTE5O8txzz/Hggw9y/PhxgsEgiUSCWCzG3NwcW7Zs4Ve/+hV9fX3U19fT2NhIsVjk+PHj3H///e529qFQiJMnTzI6OsqFF16I3+9nZmaGzZs3s2nTJsbGxmhsbKSurg4hBE8++SRPP/00+/fvZ35+np6eHkKhEJZlsX37dp5++mmOHDmCbdusXr0aIQR79+5lamqKxsZGuru7sSyLl156iaeeeoqjR48SCATcJRHnC6pduLMSBsoJh2Bubo5Dhw6Rz+eZmZll586djIyMIJzduzs7l9HV1cWmTZvYs2cPyWQS6XjJaWhocHy1xSkUCvT29rJz504sZxHciy++yK5duxgZGaG/v59nnnnGmbcxOXz4MKlUinQ6zaZNmxgYGMC2bfx+P52dnbS0tDA8PMxDDz1UTrXTldPdtkKhwB133EE2m+Xo0aPs2LGDycnJU5QX5zLOny85j1A2lVFduXg8zqWXXs7GjRuJRuOOlYBgfj7Jli1bOXjwMPl8wSWe7iK1tbWxYcMG4vE4Qgj8fj+hUMgV4EwmQ319PRdeeCHd3d1ks1n33UAgyLp167n00supS9RTtEpIZy3Qrl272bt3P6nUAj5f2Sm9Tq8XuVyONWvW0NnZ6XY7zydUCXQW4lQtmGPMKXxOywQgSSZTHD9+nBtuuIHly1e4G19paI2Y7jIJxyhUC7nQSgDTRBjONec/JAjDMQJFYEiBAGZnZxkbG6OlpYUrr7wKo2J7Sa+iAUd58fTTT3Ps2DFM0yQYDLr3zgdUCXROQDk3tKXyliMlSKmEM5/P093d7djIeccWi9XRmjTeAbz+bRgCYRjKPFRxBwRI7TTe8772ga22M2l3loovjsPbCkkp6erq4t3vfjdXXXUV8XjcvXc+oEqgsxS6JpcSLEti28qvgXd2Xz83MjJCMpl0LQz0dW1Eerprfr9fbZI1NU1qPknA73fYU9771LZtLNtCOl1KwzCxbZu5uTkmJ6ac8FT4lmW765A0wuEwra2t1NXVLfKbcL6gSqCzHIGAn9raWmpqaojHY9TU1BAIqHFHKBSiubmZgwcPIqUkGAximgam6aOmJk5LS6s73vH5fNTW1tLU1OSSsL29nVAoxOzMDPlsjmWdneAQt6amllg8TjQWoz5R75oERaNRampqSSZTDI+MOE5MFDnD4TCxWIxgMIh0FBnr1q1jfHycHTt2cOTIkUUkPx9QtUQ4C+HtZs3PzzM4eBLTVESwbZvW1lYaGhpJpRY4evQoL7/8MoFAgI0bL6G7eyWmaTI/P8/AQD8XX3wRoVAI27aZmJhgamqKnp4e/M5Wi3v37uX48eMk6hNcffXVxGJxJJKXDxwk4Ffjp9m5WVb2dNOQUB54Dh48xOHDR8jn86xc2cWVV16JYRj09/eTTqdpaGigra0Ny7KYnp7m2WefJRAIsGHDBnp6ehCvw9rhbEWVQGchvAKmu3JLQRNNWxYIYaC1d7rl8drDebt/lV07nHhtj/2agYFatVd2Hu8NCyce/X6lelo69njFYtEZa+kFftJJ67mPKoHOSkg1iq+A7WyzCNJdDKpIpJ8o258pYVX3vTsqaHhJgxAqRttWQQuwDAPbUSgICSZg2mo5txBKW+dE6S6+E0IgkEjU4jm1HaTznJRqHCWc1tXWiVbxq/Ak8hxbsVol0FkJL4Gk0rwJ/XsxyqTQ6u2l+Oc9UTcdcXUumYDhXhOAZUvHma9AChW26SGgAMUkJ0j1ng5BEdyrjVMvefxt27oFEk7a9bP6W88NVAl0VkIJooLH0bsBSMsVOo2y8Op31dVToYXW9jwnENJwJ2FtR8hlyUY1Bk4LZQiHACoMTSDVduFo4ryS7zRlGgKk8JDLmVfSpNPhuZw+R0hUJdBZCS+BJEJKhLSRhoHEVsK2pIQtcU04KmXJqQSSUjMBIQVSgG1IbGwsW2JIgSHBkBIpTDAkiEpVtBJ+qfqLbksmUPNHitqq1bMBtfBBXTOEumpIW18BqdJ4rnTlqgQ6K6EETiIQjgCDM1g3HHJJXXu/MqTzj0Aqzjk1PwJKFAGpeAFgSKQBJQF5p1tnIjFsibAFpmEo4hpOayLBEAKhBmeq8yYEhkN6pEFJoM4dMkkJ0lbxGEIihI0hLYfAJmq0pcIXni7j2Yoqgc5ClLtOTqMilOmBspETbnfrzOFROjjdKAOTAjbCkgjLRmAjFGewpYG0VGsghcQyJcIwCOpWy4FAtVpusjRhFVWQGM6ISLpdNiywiiUsUyBMgTDARKpPBFVRYChlQ5VAVbweKKFU2rWp+TQvHh5k68t9BAOmuo4Aoev1V4DQgiuQONYEwsCWArtUoKnWx1UXrmF1ZxuRoB/DsYezhYEo6V6fTW5ujr6de1jYd4x4toAQNpahWjTVQiqlmhYkgfoIG4nAUN05qwiNDdResoGuyy/BMkD6TDANDAyXQALL09U8+1El0FkJoUYMQnB8aJY7Ht3HHfe/iBkJu4N2t4V6RSjpFrYmm6FaECtPNFzkP33kUm68+mKWN9UTNASGMJEIbAGWbSNR3avi5DiDjzzD0D/dQUsqg4FFQagxjoHqyqlUlcc7AgMpLKfxs7GlRbG7i/iHP8jFf/gpLMNGmj7V5XNJLl0CiQodxNmKKoHORujJRuDgwAzf+fkuvn3H8xCNIAzVfZNIt8N0ekgwLYRlAn41prGLRMQCv319D3/8e2/nop5OosEAhlSTmzaqWbGkpSae7CLJsSEGfv4QC//ne7RPz+OzLEoSpHBU3xLQyg2HQoZLJrCETYkihdU9RD/7Sdb8f/8UC1FWikgU4QADyx0Hvfr3/fvj3Gkr/4PAVT6J8vyLYYIR8EPIhwwGkMEABP0Q9L3KUX5GBHwYfoNI1ODidU384Qev4uKV7dSE/I6WDZeUStMnMaXqislgkEBrE7VdyzBDAXwIQvgISx9B6SMk/ISFj5DwEUQfpnoGHyH8BPETxiCERBo2tjCdJsaxMEdrMii3rudAC1Ql0FkElzxOn0iNdfTcieoWLe7XaCl7hcMyMSSY0saw8jTXGHzo3Ru45qLlxMLK6FMRxxl7OYN+G4klJPh8xBuaufC660m87TKK0ShFR3ngEk5bjjuCL4SyOJBOGDYGUiqtoqaoimuxAJbbG8dq4uxvgKoEOlvgnfaQwnYuKIWBEGpcoro6XqhnysepMCwfpm2AVcJvWixvj/Pea9cT8CuNmi2VGKv5HjVnZEoDHyBMsAywDR+ypo58ax3poIkltepbOl03FbdWqwvU5KyB6S7EE0KC4xsbYZQ/RLdy7rug9mMpWy2czagS6CyEkOWWRoKzY7azgbBDLPWgFmIDoSZ5dAjub9u0sYXSrNnCQAgTPwIps2oSU0gQjvmMNBdZPkgpwDYQtgl+P4kNF+Crq8E2DecJJfgGim1OR8yJWU3ISpw0uippRToXji2eai+FUmEb2jB2cXVxNqJKoHMGWjTLtbKQSvgQziSp85ya3RdqAtawlMrYNClKyUw6xdDUNNIOOKrwshmPPjR1pQDbFqTTOXqHhhkvZSn6fBiG6Yq24VBYqddfGxZVBucoqgQ6Z+EIuy1O1fdKwFbtg2GVAEtpvGSQVErQd3IOSyqNmxSqVZPOuEWNswyEbWA4FtO5YoHxqUlkOIwIRZCmqSJx5n7cztYpXcxXw7lNHqoEOvchpIEpTaczpVqlgOmjPh6mKRaizgwR9ln4RB4sm9Scxa49A0wmU46nHW2hZjvmM7YipDTVJKyw8QUNaqM1NHWvIn7RWoyGGmxn0GY7vbBT28fXgzf29r8HqgQ6Z6HGFRID01az/WAR8Zt01MdYtzzB8kSY7rZ21nc1cMmqGBctD9EUtBk5McTgxCQFq+jqxcqh2tiGxHImVQ1DEg0H6VmxkoaeldS/+0oCXW1IQ+nrEMpeT+ge4GlwZuR69SfONlQJdM5CdbkQULCLSCxMmWd5S5S3rW9lZaMg6kuz/qJWPvK+S/jLP3wn//M/vYMv3ryed1+9CtMSGLYarAthKhMfoGQKLANKpsQWNj7LJmwbhPxB8kJidDZi1sXBWX1qaG2zd/HcfyBUCXTOQo19BBJMG9Ow6V7eQkt9mFxyDH9xlvddvYx072ae/fl9PPrLp5hOpbjwsnXUNdUSi9VgGD4MG4SltMa2lCB9SEcBYZYszJKNicDAJoRg5KkXmD0ygF2y1JJvwBJgSWX6czq8SgPl4NWfONtQJdA5DGVZbROUglgojF2C/r5Rjh0fIdFYz6c+8A7+5r/8Hn/42Vuw4038y4Mv8hffvJfNLx6lJhrCZ/qwbaGWiuMsTZCAlBSlRdGU5P2wYNpk/BI7lyF0cpJgMofhGItKITGEwEQ4k6VvBFUCVfEWQptgGviw8pKp6QwLBYNofRORhnr2j0zRO1mkb6zA0ESRdF7S2FLH2y5dSyGbwbZsLASWWsygJlOxMbEQhlo+4cMmICV+ISgupBCT0xjZvLNsDqVMcFTYZ9bKnF+oEugsh5BOq+DM7i9Sd9kSYQmkLSgWYCFjYRlhciLCCwdH+Ke7N/Pt+3bxs0f2MTM6x2WrWrnpN9bR3ZFgYjrJ7v0H6R8aJpPLe6wIbAzAn8uRO3yMqceeY+4XT5F6ZjtTz2ylNDiEmc9iOCtJ9YG0lbmQS0lFSwNLLZhzJ2g9ugLp6YbiDqbOmdWoVAl09sCRJWUjJlmkkTIBU9j4sQhgEaCEnxJ+LPzYmJQwhcQvJFgWM7Mp9h4c5rntvWx6qY/xyTnaEgEu66lnWX2QwcERdu4fYOtLBxgaHaNUKiKkWlQnHa85xeERxh5+mr5v/ZChb/4Lw//8r4zffg+lkyPY2JQCglJAYPsNSgGDYkCUjyAUg1L9DUDJOYoBg5JpgOWsTJX6w9Xkr1i0sO7cQHU5w1kJtRZICEHf8Dx3PXGAH/3iJYJhv+MEXgkggImJYRvYsgTCxjBsGupjtHc0c3Jwilwhz9WXLmNVZw2xgMTKFxgZX2DnnoPceM0FvPedl7OivQlTWJiGjY3AFH4Gn3iaEz++D+uFPdSXiuR9BQzhI2JGwDCxDccEVYLQbrFcywJlSCqFUPNKGNh2kdKK5cRvvpmeT/4e+WAAny3wSRspLGxDgjAwFnnrcSI4i1El0NkI2/GdJiBXtBlL5RmdyyOkhXJQqhaxaQsEJcAWQhr4fYJoxE8g6GNsfJZYLE5N2AeFItmFNNlsjmypRCgSoauziWjQjykkhlDqOGGZYPhZGJ9ETk4TWEhjiCKlkEQYfkzC2AhsaSnBR2BKAyktx/BVLcWW2EhDqmXhhgC7hGEGMWubMVqaKPkMTGlgYmMbRWzDxsBE2D6nY6TJeHajSqCzEMrXm1IRgEWhmCGVzRCJ1CAtCyEkhuE44BAC8JUFTpYwKGGYBkXbjzBKmNLP3MQMU+OTYJh0rV0Jhk3AH6SYy2MVLfw+P8GQHwxBqSSxLQvDtlBL3iRpIUnbJex0ltpgmKhnmxLhGC8s0iBIiRQ2RQz8UhHLkpISAsP0EXAcMEhhUTKKSGHjkyYCv9ON1WJ5dqslqgQ6C+HwByEEhVyWqYkxxsfHWN7VzcTEOFapSKK+gbq6BvL5PNKSqgsn1Z6q/oCPxqZ6Jianqa2NEzBDHHr5KGOjE7S0tbFsZSdGQGLYBjOTUyRn5vEbPmrrEwSiESYnJ2lqbcIf8JEvFRE+P+FQlOf37qYwn2R5WwdtLW34/T6KpQK5bJ5QWC03t+0StuMZFSC5kEFaJQKBAHmrhC0Ey1o7CFgS4fOBCbahTImENBwfdXhanyqBqnitkGoUIQzB/FyS48d6mZwYp6m5mbGxMdKZBUKhCDXxWgxTzcHYtkVqYQG/38+KrhW0d7SxectWLtlwMaFQhF279zI1OU1bexvpdJKaRAyrWKSUL1LIFpAlCIZCWCakswtc8bYrQEqmpqeJRuN0tnXy8MMPEfT5iMTihCIRhCHI5LP4DJNCsYTfNPAHfGoeqVBEGAaWhGI+R8kqIfwBWtva2bj+IsyShRXwIQ2htHdOpeFmwFlOHI2qFu6shFp8pmzdQBoGwUiYfKFAKBQiFI5SLFnMJ5OULAsbKFqQyRUQPh/ReBwhTHy+IKbppyQhFAkTqwmRzszx8oGXmRqdYnp6hpKUhGJxApEYRSlJpZMEIgGCgSB+M0DA8BMSfkzboCFaS1dXN7HaOPlClvn5Webm5pC2TTI5TzqTwbYktiXJpDOk0xm1JN0wKBaKmBjURmOYQiAMgSWgJNSiPmEZCFu7+NUEOvtJVG2BzlLYtoUQgly+wPjkJHMzE0SjceXN0/RhCAPTMAgG1Z6n2WyOYrFIJBImGovqZW4IAdl8geT8DHOzk4yPjTMwMMIVl15BqCZCKBjCNHxqSlZIinaOUDRIPFyL31R7AhlSYBdtxqeniDTU4jMEpUyWbDpLsVgiGo1SLBUIhsKEQkGkbZPNZNSuetj4hIlVLBEIh6hLJAgFQyAtSj4T2xD4bPBbam2TNPV80bnhWKRKoLMQttTbi9jk81nGxqfp7+91fA84zgSkxLJttTra2d1AOOptKZVzeFB2bAiJ6fNRKlkkk0lyuRzNzc34Az4l5LayJDAFSGEgrRLFknR2WAAMobqKhg/LUt53hGFgCIEhDGyptkRRW0IquyDTKDsNsQ2BbRWIx6J0dHTS3NiMbYDfMBHCUEoDlHth21ATs2XbhrMbVQKdxRBAsVhkbj7J1NSUs4kwFIsFbFvi8/nc/X/0fj3C2YfHu52JIoKyvNZbn1iWpeaUnNI3DGWcUyyVsG3twF5vXS+UoagzyWl4lltrC2zh7C3k3ULFZ/rUfJBUZAwGA8Rr4sSiMQBMw3DcdJ27+H8B+ayf6sh058UAAAAASUVORK5CYII=" alt="Lycée professionnel – lycée des métiers Val Moré, académie de Reims">
+      <span class="sep" aria-hidden="true"></span>
+      <div>
+        <p class="tag">Pôle routier · Bac Pro CRM</p>
+        <h1>Parcours permis Bac Pro CRM</h1>
+        <p class="sub">Cliquez sur une case pour lire le passage officiel (référentiel, arrêtés, codes) et ouvrir le texte sur Légifrance.</p>
+      </div>
+    </div>
+    <div class="legend" aria-label="Légende">
+      <span><i class="sw" style="border-color:var(--navy)"></i>Étape</span>
+      <span><i class="sw" style="border-color:var(--fail);background:var(--fail-bg)"></i>Échec / remédiation</span>
+      <span><i class="sw" style="border-color:var(--ok);background:var(--ok-bg)"></i>Délivrance</span>
+      <span><i class="sw" style="border-color:var(--opt);background:var(--opt-bg);border-style:dashed"></i>Option</span>
+      <span><i class="sw" style="border-color:var(--info)"></i>Information</span>
+    </div>
+  </header>
+  <nav class="steps" aria-label="Aller à une année">
+    <a href="#b-pre" style="background:var(--ppre)">Entrée</a>
+    <a href="#b-s2" style="background:var(--p2)">Seconde</a>
+    <a href="#b-s1" style="background:var(--p1)">Première</a>
+    <a href="#b-st" style="background:var(--pt)">Terminale</a>
+    <a href="#b-sj" style="background:var(--pj)">Jury</a>
+  </nav>
+
+  <div class="layout">
+    <main id="diagram" aria-label="Diagramme du parcours"></main>
+    <aside class="panel closed" id="panel" aria-live="polite">
+      <div class="ph">
+        <div><div class="k" id="pk">Textes officiels</div><h2 id="pt">Choisissez une case</h2></div>
+        <button class="close" id="close" aria-label="Fermer le panneau">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="pb" id="pb"></div>
+    </aside>
+  </div>
+  <footer>Freddy ROBERT — Professeur de lycée professionnel – Transport et logistique · Lycée professionnel du Val Moré, Bar-sur-Seine. Extraits reproduits d'après le JORF et Légifrance (versions en vigueur au 21 octobre 2026).</footer>
+</div>
+
+<script>
+const SRC = {
+  ref: {name:"Arrêté du 26 mars 2025 portant création de la spécialité « conducteur routier de marchandises » de baccalauréat professionnel", short:"Arrêté du 26/03/2025 (bac pro CRM)", url:"https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000051539679"},
+  a2013: {name:"Arrêté du 17 janvier 2013 (permis au vu des diplômes) — version consolidée en vigueur", short:"Arrêté du 17/01/2013 consolidé", url:"https://www.legifrance.gouv.fr/loda/id/JORFTEXT000026952010"},
+  a2022: {name:"Arrêté du 18 juillet 2022 modifiant l'arrêté du 17 janvier 2013", short:"Arrêté du 18/07/2022", url:"https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000046070051"},
+  a2024: {name:"Arrêté du 23 février 2024 modifiant l'arrêté du 17 janvier 2013", short:"Arrêté du 23/02/2024", url:"https://www.legifrance.gouv.fr/loda/id/JORFTEXT000049303661"},
+  ari: {name:"Arrêté du 16 décembre 2020 relatif aux conditions de délivrance de l'attestation de réussite intermédiaire", short:"Arrêté du 16/12/2020 (ARI)", url:"https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000042876904"},
+  ns: {name:"Note de service du 20 janvier 2021 — délivrance de l'ARI (BO n° 6 du 11 février 2021)", short:"Note de service du 20/01/2021", url:"https://www.education.gouv.fr/bo/21/Hebdo6/MENE2102235N.htm"},
+  ce: {name:"Arrêté du 5 janvier 2023 relatif à la conduite encadrée", short:"Arrêté du 05/01/2023", url:"https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000046979579"},
+  r2115: {name:"Code de la route, article R. 211-5-2", short:"Art. R.211-5-2 C. route", url:"https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000046126600"},
+  r3313: {name:"Code des transports, article R. 3313-21", short:"Art. R.3313-21 C. transports", url:"https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000046118830"},
+  a2012: {name:"Arrêté du 20 avril 2012 fixant les conditions d'établissement, de délivrance et de validité du permis de conduire", short:"Arrêté du 20/04/2012", url:"https://www.legifrance.gouv.fr/loda/id/JORFTEXT000025803494"},
+  a2012m: {name:"Arrêté du 31 juillet 2012 relatif à l'organisation du contrôle médical de l'aptitude à la conduite", short:"Arrêté du 31/07/2012 (contrôle médical)", url:"https://www.legifrance.gouv.fr/loda/id/JORFTEXT000026310765"},
+  r22110: {name:"Code de la route, article R. 221-10", short:"Art. R.221-10 C. route", url:"https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000051682550"},
+  r22111: {name:"Code de la route, article R. 221-11", short:"Art. R.221-11 C. route", url:"https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000046217357"},
+  r3314: {name:"Code des transports, article R. 3314-4", short:"Art. R.3314-4 C. transports", url:"https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000043471782"}
+};
+
+/* Extraits officiels (texte intégral du passage cité) */
+const X = {
+  prereq_ref: {src:"ref", loc:"Annexe IV — sous-épreuve E31, I.2 (prérequis)", text:
+`I.2. – Pré requis (candidats relevant de la voie scolaire dans un établissement public ou privé sous contrat, de l’apprentissage ou de la formation professionnelle continue en établissement public) :
+Concernant les candidats scolaires ; Il convient de s’assurer qu’ils disposent à l’entrée en formation de l’attestation scolaire de sécurité routière de niveau 1 et 2.
+Concernant les candidats apprentis et stagiaires de la formation continue de moins de 21 ans, il convient de s’assurer qu’ils disposent à l’entrée en formation de l’attestation de sécurité routière, conformément à l’article R221-5 du code de la route.
+A défaut, le candidat se met en conformité avec la réglementation en vigueur.
+L’ensemble des candidats doit avoir validé l’épreuve théorique générale (ETG) et les épreuves de conduite des catégories B et C, comme suit, pour se présenter à cette partie.`},
+  neph: {src:"ref", loc:"Annexe V — 2. Conduite encadrée", text:
+`Chaque candidat doit disposer d’un numéro d’enregistrement préfectoral harmonisé (NEPH).`},
+  etg: {src:"ref", loc:"Annexe IV — sous-épreuve E31, I.2.1", text:
+`I.2.1. – Validation de l’épreuve théorique générale :
+Il convient de distinguer l’épreuve théorique générale validée dans le cadre de la formation (ETG EN) et l’épreuve théorique générale validée par le ministère de l’intérieur (ETG MI).
+– les scolaires en établissement public ou privé sous contrat, les apprentis en centre de formation d’apprentis porté par un EPLE, GRETA ou GIP FCIP, les apprentis habilités au CCF et les stagiaires la formation professionnelle continue dans un établissement public doivent avoir validé l’épreuve théorique générale Education Nationale (ETG EN). Chaque présentation à l’ETG EN est composée de deux séries consécutives de quarante questions ; le meilleur résultat est pris en compte. Dans l’éventualité où le candidat n’obtient pas un résultat favorable à l’une des deux séries (total inférieur à 35 bonnes réponses), il se voit proposer jusqu’à deux autres présentations à l’ETG EN.
+[…]
+– pour les candidats issus de la voie de formation initiale sous statut scolaire ou de l’apprentissage, il est fortement recommandé que la dernière présentation à l’ETG soit réalisée au plus tard fin avril de l’année de seconde ;
+La pièce justificative de réussite à l’ETG est jointe au dossier de synthèse décrit ultérieurement.`},
+  etg_disp: {src:"ref", loc:"Annexe IV — sous-épreuve E31, I.2.1 (dispense)", text:
+`Les candidats titulaires de l’ETG du ministère de l’Intérieur (ETG MI) prévue par les arrêtés du ministère de l’intérieur fixant les conditions d'établissement, de délivrance et de validité du permis de conduire ou les titulaires d’une autre catégorie de permis de conduire (sauf AM, A1 et A2) depuis moins de cinq années à la date de l’épreuve sont dispensés de cette épreuve d’ETG EN. L’authentification de la pièce justificative est réalisée par le bureau local relevant du ministère de l’intérieur en charge de la gestion des examens du permis de conduire, à la demande du chef d’établissement et/ou des services académiques.`},
+  b: {src:"ref", loc:"Annexe IV — sous-épreuve E31, I.2.2", text:
+`I.2.2. – Validation des compétences des épreuves pratiques de conduite de la catégorie B :
+– chaque candidat, se voit proposer jusqu’à trois passages pour l’épreuve pratique de conduite de la catégorie B. Pour tous les candidats, cette épreuve pratique de conduite est évaluée par les inspecteurs du permis de conduire et de la sécurité routière du ministère de l’intérieur ;
+– pour les candidats issus de la voie de formation initiale sous statut scolaire ou de l’apprentissage, il est fortement recommandé que l’épreuve pratique de conduite de la catégorie B soit validée au cours de la classe de seconde, au plus tard au 30 septembre de l’année de la classe de première ;
+– pour les candidats de la formation initiale, sous statut scolaire ou de l’apprentissage, déposant un dossier de positionnement pour intégrer la formation en classe de première, il est fortement recommandé d’être déjà titulaire du permis de conduire de catégorie B pour intégrer la formation ; le recteur arrêtant sa décision après avis de l’équipe pédagogique.`},
+  c: {src:"ref", loc:"Annexe IV — sous-épreuve E31, I.2.3", text:
+`I.2.3. – Validation des compétences des épreuves pratiques de conduite de la catégorie C :
+– chaque candidat se voit proposer au maximum trois présentations à chacune des épreuves du permis de conduire de la catégorie C (3 passages possibles à l’épreuve HC et 3 passages possibles à l’épreuve de CIR). Cette épreuve pratique de conduite est évaluée par les enseignants et formateurs autorisés à évaluer par le ministère de l’intérieur les scolaires en établissement public ou privé sous contrat, les apprentis en centre de formation d’apprentis porté par un EPLE, GRETA ou GIP FCIP et les stagiaires la formation professionnelle continue dans un établissement public, dans le cadre de leur formation ;
+– par ailleurs, les apprentis en CFA habilité au CCF ou non, passent, dans le cadre de leur formation, les épreuves pratiques de conduite du permis de conduire de la catégorie C en faisant appel aux inspecteurs du permis de conduire et de la sécurité routière relevant du ministère de l’intérieur ;
+– pour les candidats de la formation initiale, sous statut scolaire ou de l’apprentissage, il est fortement recommandé que l’épreuve pratique de conduite de la catégorie C ait été validée au cours de la classe de première ;`},
+  echec: {src:"ref", loc:"Annexe IV — sous-épreuve E31, I.2.3 (échec B ou C)", text:
+`– en cas d’échec aux épreuves pratiques de conduite de la catégorie de permis B ou de la catégorie de permis C, il est fortement recommandé que l’établissement de formation engage le candidat concerné dans un processus de réorientation ou lui propose un redoublement en fonction des places disponibles. La mise en œuvre de dispositifs de suivi, d’accompagnement individualisé et de « conduite professionnelle renforcée » doit permettre d’éviter d’avoir recours à ces propositions de réorientation et de redoublement.
+Les pièces justificatives de validation des compétences des épreuves pratiques de conduite des catégories B et C sont jointes au dossier de synthèse décrit ultérieurement.`},
+  art8: {src:"ref", loc:"Article 8", text:
+`Art. 8. – Pour les scolaires en établissement public ou privé sous contrat, ces durées minimales de formation sont garanties par la grille horaire définie par l’arrêté du 21 novembre 2018 modifié. Un livret de suivi accompagné d’un relevé individualisé des temps de conduite de chaque élève permet de vérifier le respect des exigences de volume horaire en conduite. Ces candidats doivent avoir validé l’épreuve théorique générale (ETG) et les épreuves de conduite des catégories B et C pour se présenter à la première partie de la sous-épreuve E31.`},
+  art7: {src:"ref", loc:"Article 7", text:
+`Art. 7. – Le permis de conduire poids lourd, de catégorie C ou CE et la carte de qualification conducteur (CQC) correspondant à la catégorie C ou CE du permis de conduire sont exigés pour accéder à tout emploi de conducteur routier de marchandises.
+Les compétences et connaissances enseignées sont mentionnées dans la liste figurant à la section 1 de l’annexe I de la directive 2022/2561 du 14 décembre 2022 relative à la qualification initiale et à la formation continue des conducteurs de certains véhicules routiers affectés aux transports de marchandises ou de voyageurs.
+En application de la section 2 de la même annexe I, option 2.1 Option combinant la fréquentation de cours et un examen, la formation est d’une durée minimale de 280 heures comportant pour chaque candidat au moins 20 heures de conduite individuelle sur un véhicule de la catégorie C ou CE.`},
+  cpr: {src:"ref", loc:"Annexe V — 3.1.1 Durée", text:
+`Pour le baccalauréat professionnel « conducteur routier de marchandises » 20 semaines de PFMP permettent d'aborder des activités liées à la réalisation d'opérations de préparation, de chargement-déchargement, d'arrimage, de livraison et d'enlèvement des marchandises et des activités liées à des opérations de transport en lien avec des transports spécifiques (transport frigorifique, matières dangereuses, masses indivisibles …). […]
+A l’occasion de ces PFMP et pour les élèves inscrits en dernière année de formation, le recours à la conduite encadrée doit être encouragé en étroite collaboration avec les entreprises d’accueil.
+Sur ces 20 semaines de PFMP, 10 semaines doivent intégrer la « conduite professionnelle renforcée » (nouvelle modalité remplaçant la conduite intensive) sur les véhicules de l’établissement de formation (organisation interne à arrêter). 2 jours ou 4 demi journées (consécutifs ou non) par semaine, soit un équivalent 20 jours sur 10 semaines de PFMP, doivent être consacrés efficacement à la « conduite professionnelle renforcée ». Cette modalité de conduite permet aux élèves de justifier d’un temps de conduite conforme à la directive européenne. Le reste du temps les élèves sont en PFMP.
+Au regard du livret de compétences de chaque élève et en prenant en compte ses aptitudes à la conduite de véhicules de type B, C et CE, la conduite professionnelle permet également à des élèves rencontrant des difficultés pour le passage des permis B et C et CE de renforcer leurs compétences en matière de conduite de véhicules et ainsi assurer une meilleure réussite à l’examen.`},
+  ce_contenu: {src:"ref", loc:"Annexe IV — sous-épreuve E31, I.1 (règlement d’examen : 1re partie, coefficient 6)", text:
+`I. – Première partie de la sous épreuve E31 : épreuves pratiques « hors circulation (HC) » et « en circulation (CIR) » du permis de la catégorie CE (coefficient 6)
+Les épreuves pratiques « hors circulation (HC) » et « en circulation (CIR) » de la catégorie CE sont définies par les arrêtés du ministère de l’intérieur (MI) en charge de la délivrance des permis de conduire (contenus, durée, exercices, critères d’évaluation, indicateurs de réussite).
+[…] Cette première partie permet d’évaluer les compétences suivantes :
+C5 Prendre en charge et manœuvrer le véhicule
+C6 Conduire un véhicule de manière rationnelle et en toute sécurité
+L’épreuve pratique « hors circulation » permet de valider la compétence C5 et l’épreuve pratique « en circulation » permet d’évaluer la compétence C6.`},
+  ce_ccf: {src:"ref", loc:"Annexe IV — sous-épreuve E31, I.3.2 Contrôle en cours de formation", text:
+`La commission d'évaluation est composée, a minima :
+– d’un enseignant ou formateur titulaire du permis CE n’ayant pas contribué à la formation régulière du candidat ;
+– de l’enseignant ou du formateur du candidat, en charge de l’enseignement de conduite routière ;
+– d’un professionnel associé à cette évaluation. Toutefois, en cas d’absence de celui-ci l’évaluation peut tout de même avoir lieu.
+[…]
+Conformément à la réglementation du ministère de l’intérieur, pour valider les compétences du permis de catégorie CE, les épreuves pratiques doivent avoir été menées à leur terme. Le candidat doit avoir obtenu les minima de points requis pour l’épreuve pratique « hors circulation » (HC) et pour l’épreuve pratique « en circulation » (CIR), ne pas avoir de note éliminatoire et avoir obtenu un résultat favorable au test de maniabilité (HC).
+La note de 10/20 correspond au minimum de points exigé par les grilles du Ministère de l’Intérieur (hors points de bonus pour la conduite économique et la courtoisie) pour validation des compétences.
+[…]
+Chaque candidat est autorisé à se présenter jusqu’à trois fois à l‘épreuve pratique hors circulation et jusqu’à trois fois à l’épreuve pratique en circulation.`},
+  ce_echec: {src:"ref", loc:"Annexe IV — sous-épreuve E31, I.3.2", text:
+`En cas de notes éliminatoires lors des épreuves pratiques (HC ou CIR) ou d’avis défavorable au test de maniabilité lors de l’épreuve pratique Hors circulation HC, selon la terminologie du ministère de l’intérieur, la note de 0/20 est attribuée à la 1re partie de la sous-épreuve E31. Par conséquent, le permis CE ne sera pas délivré.
+[…]
+Pour se voir délivrer le permis de conduire CE, le candidat doit avoir obtenu une note supérieure ou égale à 10 sur 20 à la 1ère partie de la sous-épreuve E31 et être lauréat du baccalauréat professionnel « conducteur routier de marchandises » selon la règlementation du ministère de l’intérieur.`},
+  ce_dossier: {src:"ref", loc:"Annexe IV — sous-épreuve E31, I.3.2 (dossier de synthèse)", text:
+`A l’issue de l’évaluation des épreuves pratiques du permis de conduire, la commission d’évaluation constitue pour chaque candidat un dossier de synthèse, à transmettre au jury. Celui-ci est constitué :
+– des activités et/ou exercices proposés aux candidats ;
+– de la fiche de recueil du positionnement du candidat vis-à-vis des connaissances et des compétences démontrées durant l’épreuve pratique hors circulation et en circulation pour l’obtention du permis visé ;
+– de la grille d’évaluation du ministère de l’intérieur pour chaque épreuve pratique ;
+– de la grille nationale d’évaluation du diplôme complétée pour la première partie de l’épreuve E31 ;
+– des pièces justificatives de réussite à l’ETG, aux permis de conduire de catégories B et C.`},
+  cqc: {src:"ref", loc:"Annexe I — II.1.2 Types d’emplois accessibles", text:
+`Pour pouvoir accéder à un emploi, le ou la titulaire du baccalauréat professionnel « conducteur routier de marchandises » doit détenir la carte de qualification conducteur (CQC) correspondant à la catégorie C ou CE de son permis de conduire. La demande est faite par ce dernier après l’obtention du diplôme, auprès des services du ministère chargé des transports.`},
+  ce_annexeV: {src:"ref", loc:"Annexe V — 2. Conduite encadrée", text:
+`Définition : Article R. 211-5-2 du code de la route
+La conduite encadrée constitue une nouvelle modalité pédagogique de conduite des véhicules du groupe lourd. Elle n’a pas de caractère obligatoire mais constitue une possibilité lors des périodes en entreprise selon les modalités définies par le code de la route.
+Elle s'adresse aux élèves conducteurs, apprentis conducteurs et stagiaires en formation professionnelle, âgés de seize ans au moins, préparant un diplôme professionnel et respectant les conditions énumérées dans l’article R.211-5-2.
+[…]
+Chaque candidat doit disposer d’un numéro d’enregistrement préfectoral harmonisé (NEPH).
+Demande de carte chronotachygraphe :
+Tout élève ou stagiaire conducteur en formation professionnelle appelé à pratiquer la conduite encadrée sans être salarié peut demander sa carte par l'intermédiaire de son établissement ou organisme de formation sous réserve que ce dernier ait adhéré auparavant au contrat de services proposé par l’Imprimerie Nationale, ou ait recours, pour la transmission de la demande, à un autre organisme lié par convention (article R 3313-19 du code des transports).`},
+  r2115: {src:"r2115", loc:"Version en vigueur depuis le 1er août 2022", text:
+`La conduite encadrée s'adresse, d'une part, aux élèves conducteurs, apprentis conducteurs et stagiaires en formation professionnelle, âgés de seize ans au moins et préparant un diplôme professionnel et, d'autre part, aux apprentis conducteurs et stagiaires en formation professionnelle, âgés de dix-huit ans au moins et préparant un titre professionnel délivré par le ministère du travail.
+La personne qui souhaite recourir à la conduite encadrée ne peut le faire que si :
+1° Elle a préalablement validé les compétences théoriques et pratiques permettant d'obtenir le permis de conduire requis dans le cadre de la formation conduisant à l'obtention du diplôme ou du titre professionnel qu'elle souhaite obtenir ;
+2° Elle a, préalablement à la période de conduite encadrée, participé avec l'accompagnateur désigné, selon le cas, au 1° ou au 2° du quatrième alinéa du présent article, à un rendez-vous pédagogique avec le formateur référent de l'enseignement de la conduite ou l'enseignant chargé de l'enseignement de la conduite dans le cadre de la formation professionnelle.
+Au moins un autre rendez-vous pédagogique doit avoir lieu au cours de la période de conduite encadrée.
+La conduite encadrée est pratiquée sur un véhicule :
+1° De la catégorie B du permis de conduire, avec un accompagnateur titulaire depuis au moins cinq ans sans interruption du permis de conduire de cette catégorie ;
+2° Des catégories C1, C1E, C, CE, D1, D1E, D, DE du permis de conduire, uniquement dans le cadre des périodes de formation en milieu professionnel ou des périodes d'alternance en entreprise, avec un accompagnateur titulaire, sous réserve qu'ils soient en cours de validité pour la catégorie du véhicule concerné, d'une part, du permis de conduire de la catégorie du véhicule concerné depuis au moins cinq ans sans interruption et, d'autre part, de la carte de qualification de conducteur mentionnée à l'article R. 3314-28 du code des transports.
+Un arrêté conjoint des ministres chargés de la sécurité routière, des transports, de l'emploi et de l'éducation nationale fixe les conditions d'application du présent article.`},
+  ce_a1: {src:"ce", loc:"Article 1er", text:
+`Art. 1er. – La pratique de la conduite encadrée est autorisée pour les élèves conducteurs, apprentis conducteurs ou stagiaires en formation professionnelle en vue de l’obtention d’un diplôme de l’éducation nationale ou d’un titre professionnel délivré par le ministre chargé de l’emploi permettant la délivrance du permis de conduire respectant les conditions cumulatives suivantes :
+1° Avoir atteint l’âge minimum de seize ans pour les diplômes de l’éducation nationale ou de dix-huit ans pour les titres professionnels ;
+2° Avoir participé à un rendez-vous pédagogique préalable organisé par le formateur référent de l’enseignement de la conduite ou l’enseignant chargé de l’enseignement de la conduite dans le cadre de la formation professionnelle, qui comporte une phase de conduite dans le véhicule de l’établissement dispensant cette formation. Au cours de cette phase, l’accompagnateur est assis à l’arrière du véhicule et bénéficie des conseils de l’enseignant. Le livret de suivi des compétences de l’élève, de l’apprenti ou du stagiaire sert de référence pendant le rendez-vous pédagogique préalable.
+Pour la conduite des véhicules de la catégorie B du permis de conduire, ce rendez-vous pédagogique préalable est d’une durée minimum d’une heure.
+Pour la conduite des véhicules des catégories C1, C1E, C, CE, D1, D1E, D, DE du permis de conduire, ce rendez-vous pédagogique préalable est d’une durée minimum de trois heures trente minutes. […]
+3° Avoir obtenu la délivrance d’une attestation du chef d’établissement ou du directeur/de la directrice de l’organisme de formation établie conformément au modèle figurant en annexe 1 du présent arrêté.`},
+  ce_a2: {src:"ce", loc:"Article 2", text:
+`Art. 2. – Avant le début de la conduite encadrée, le souscripteur du contrat d’assurance demande l’accord préalable écrit de son assureur sur l’extension de garantie nécessaire pour la conduite du ou des véhicules qui seront utilisés.
+[…]
+L’attestation du chef d’établissement ou du directeur de l’organisme de formation et l’accord de l’assureur sont conservés dans le véhicule pendant la conduite encadrée. Ces documents tiennent lieu de justificatif en cas de contrôle par les forces de l’ordre et sont présentés à toute réquisition.`},
+  ce_a3: {src:"ce", loc:"Article 3", text:
+`Art. 3. – Lors de la conduite encadrée, l’accompagnateur est assis à l’avant du véhicule à côté de l’élève conducteur, de l’apprenti ou du stagiaire.
+[…]
+Pour la conduite encadrée pratiquée dans un véhicule des catégories C1, C1E, C, CE, D1, D1E, D, DE du permis de conduire, l’accompagnateur est un professionnel de la conduite routière titulaire du permis de conduire correspondant à la catégorie du véhicule concerné depuis au moins cinq ans sans interruption à la date de signature de l’attestation délivrée par le chef d’établissement ou par le directeur de l’organisme de formation et détenteur, pour la catégorie du véhicule concerné, d’une carte de qualification de conducteur en cours de validité mentionnée à l’article R. 3314-28 du code des transports.
+Pour les véhicules des catégories C1, C1E, C, CE, D1, D1E, D, DE, la conduite encadrée est pratiquée uniquement dans le cadre des périodes de formation en milieu professionnel ou des périodes d’alternance en entreprise.`},
+  ce_a4: {src:"ce", loc:"Article 4", text:
+`Art. 4. – La conduite encadrée se déroule sur le réseau routier et autoroutier du territoire national.
+Quelle que soit sa catégorie, le véhicule utilisé, à boîte de vitesses manuelle ou automatique, peut être attelé d’une remorque dès lors que l’ensemble constitué par le véhicule tracteur et la remorque ne relève pas d’une catégorie de permis de conduire différente de celle pour laquelle les compétences théoriques et pratiques de l’élève, de l’apprenti ou du stagiaire ont été validées.
+Pour les véhicules de la catégorie B, un signe distinctif autocollant ou magnétisé, conforme au modèle annexé à l’arrêté du 22 décembre 2009 susvisé, doit être apposé à l’arrière gauche du véhicule.
+Pour les véhicules des catégories C1, C1E, C, CE, D1, D1E, D, DE sont apposés, à l’avant et à l’arrière, des panneaux ou inscriptions de dimension 100 × 30 centimètres. Ils permettent aux autres usagers de la route d’identifier le véhicule comme étant conduit par un élève conducteur en apprentissage.`},
+  ce_a5: {src:"ce", loc:"Articles 5 et 6", text:
+`Art. 5. – Au cours de la conduite encadrée, l’élève conducteur, l’apprenti conducteur ou le stagiaire en formation professionnelle :
+– respecte les limitations de vitesse mentionnées aux articles R. 413-5, R. 413-8, R. 413-8-1 et R. 413-10 du code de la route ;
+– participe à au moins un rendez-vous pédagogique qui comporte une phase de conduite […].
+Le rendez-vous pédagogique pratiqué dans un véhicule de la catégorie B est d’une durée minimale d’une heure.
+Le rendez-vous pédagogique pratiqué dans un véhicule des catégories C1, C1E, C, CE, D1, D1E, D, DE du permis de conduire est d’une durée minimale de deux heures. […]
+Art. 6. – La conduite encadrée s’achève automatiquement par la délivrance du permis de conduire ou en cas d’interruption ou d’achèvement de la formation professionnelle mentionnée à l’article L. 211-5 du code de la route.`},
+  ce_ann1: {src:"ce", loc:"Annexe 1 — Attestation pour l’accès à la conduite encadrée (extrait)", text:
+`[Le chef d’établissement] atteste que […]
+– a validé les compétences théoriques et pratiques préalables à l’obtention du permis de conduire de la catégorie (*) :
+B □ le : …/…/…   C □ le : …/…/…   CE □ le : …/…/… […]
+– a participé à un rendez-vous pédagogique préalable le (date) : …/…/…`},
+  r3313: {src:"r3313", loc:"Créé par le décret n° 2022-1090 du 29 juillet 2022", text:
+`Les dispositions de l'article R. 3313-19 sont applicables aux entreprises qui emploient des salariés pratiquant la conduite encadrée, au sens de l'article L. 211-5 du code de la route, d'un véhicule équipé d'un tachygraphe.
+Pour les élèves conducteurs ou les stagiaires en formation professionnelle appelés à pratiquer la conduite encadrée sans être salariés, les demandes de cartes de conducteur, de renouvellement et de remplacement en cas de perte, de vol ou de défectuosité sont établies sur un formulaire qu'ils signent. Lorsqu'ils sont mineurs non émancipés, le formulaire est signé par un titulaire de l'autorité parentale. Ces demandes sont adressées à l'organisme chargé de la délivrance des cartes soit par l'élève ou le stagiaire, soit par l'établissement ou l'organisme dans lequel il suit sa formation professionnelle. La redevance d'usage de la carte est acquittée par l'établissement ou l'organisme de formation, ou remboursée à l'élève conducteur ou au stagiaire sur présentation d'un justificatif de paiement.`},
+  ari: {src:"ari", loc:"Articles 1er et 2", text:
+`Art. 1er. – L’attestation mentionnée à l’article D. 337-59 du code de l’éducation est délivrée par le recteur d’académie aux élèves des établissements publics locaux d’enseignement et des établissements d’enseignement privé sous contrat qui ont obtenu en fin de première professionnelle une moyenne calculée à partir des trois éléments inscrits au livret scolaire suivants :
+a) Moyenne annuelle des notes de l’année de première obtenues pour chaque enseignement général ou enseignement professionnel, excepté l’enseignement professionnel de la spécialité de baccalauréat préparée par l’élève. Chaque moyenne est affectée du coefficient 1 ;
+b) Moyenne annuelle attribuée pour l’enseignement professionnel de la spécialité préparée, portée sur le livret scolaire, affectée du coefficient 4 ;
+c) Note annuelle obtenue au titre de la réalisation du chef d’œuvre prévu à l’article D. 337-66-1 du code de l’éducation, affectée du coefficient 1.
+Art. 2. – S’il résulte du calcul de moyenne une note égale ou supérieure à 10 sur 20, l’élève reçoit l’attestation. Elle peut toutefois être délivrée à l’élève recueillant au moins 9 sur 20.
+Dans ce cas, la délivrance de l’attestation est soumise à l’avis du conseil de classe restreint à l’équipe pédagogique et éducative.
+Celui-ci étudie l’appréciation pédagogique de la période de formation en milieu professionnel, inscrite dans le livret ainsi que l’engagement de l’élève dans sa scolarité. Ce conseil restreint est réuni au terme de l’année scolaire de première sous la présidence du chef d’établissement ou de son représentant.`},
+  ns: {src:"ns", loc:"I. L’attestation de réussite intermédiaire (extrait)", text:
+`Seuls les élèves sous statut scolaire scolarisés dans un établissement public ou privé sous contrat sont concernés par la délivrance de l'attestation de réussite intermédiaire.
+[…]
+Si elle n'a pas de valeur certificative, l'attestation de réussite intermédiaire installe néanmoins en fin de première un bilan des connaissances et des compétences de l'élève et marque ainsi une étape importante dans son parcours vers le baccalauréat professionnel.`},
+  a2022_notice: {src:"a2022", loc:"Notice", text:
+`S’agissant du Bac pro CTRM, la délivrance de la catégorie C du permis de conduire sera conditionnée à la présentation de deux types d’attestations :
+– la première, signée par le chef d’établissement et remise aux élèves sous statut scolaire, atteste de la réussite aux épreuves théorique et pratique des catégories B et C du permis de conduire et de la délivrance de l’attestation de réussite intermédiaire signée par le recteur ;
+– la seconde, signée par le responsable de l’organisme de formation et remise aux apprentis, atteste de la validation des compétences figurant dans le livret de formation et d’évaluation de l’apprenti et de la délivrance de l’attestation de réussite aux épreuves théorique et pratique des catégories B et C du permis de conduire.`},
+  a2022_ann1: {src:"a2022", loc:"Annexe I — Attestation (élèves sous statut scolaire)", text:
+`ATTESTATION EN VUE DE LA DÉLIVRANCE DES CATÉGORIES B ET C DU PERMIS DE CONDUIRE
+OBTENTION DE L’ATTESTATION DE RÉUSSITE INTERMÉDIAIRE ET VALIDATION DES COMPÉTENCES THÉORIQUES ET PRATIQUES DES CATÉGORIES B ET C DU PERMIS DE CONDUIRE
+[…] Atteste sur l’honneur que […] est titulaire de l’attestation de réussite intermédiaire (ARI) et a validé les compétences théoriques et pratiques nécessaires à l’obtention des catégories B et C du permis de conduire dans le cadre de son cursus de formation professionnelle conduisant au Bac Pro « conducteur transport routier marchandises ».`},
+  a2013_art3: {src:"a2013", loc:"Article 3 (version en vigueur depuis le 24 juin 2018)", text:
+`Toute personne désirant obtenir la ou les catégories de permis de conduire correspondant à la formation reçue pour les diplômes, certificats ou titres professionnels mentionnés aux articles 1er et 2 doit en faire la demande au préfet du département dans lequel elle est domiciliée, au moyen du téléservice “demande de permis de conduire”, conformément aux dispositions du III de l'article 1er de l'arrêté du 20 avril 2012 susvisé.
+Toutefois, les diplômes énoncés à l'article 1er peuvent être remplacés par un relevé des notes obtenues aux épreuves du diplôme délivré par le recteur d'académie […].`},
+  a2013_art4: {src:"a2013", loc:"Article 4 (version en vigueur depuis le 22 mars 2024)", text:
+`I.-En cas d'obtention d'un diplôme, certificat ou titre professionnel mentionné aux articles 1er et 2, le permis de conduire ne peut être obtenu que si les conditions d'âge prévues à l'article R. 3314-4 du code des transports sont satisfaites.
+II.-Dans le cadre de la formation au baccalauréat professionnel conducteur transport routier marchandises, la catégorie C du permis de conduire peut être délivrée dès l'âge de 18 ans :
+1° Aux élèves sous statut scolaire présentant une attestation signée par le chef d'établissement, conforme au modèle figurant à l'annexe I du présent arrêté ;
+2° Aux apprentis présentant une attestation signée par le responsable de l'organisme de formation, conforme au modèle figurant à l'annexe II du présent arrêté.
+III.-La catégorie B du permis de conduire peut-être délivrée dès l'âge de 17 ans :
+1° Aux élèves et apprentis présentant les documents visés au II du présent article ;
+2° Aux titulaires d'un diplôme mentionné à l'article 1er.`},
+  a2013_art1_3: {src:"a2013", loc:"Article 1er, III (version en vigueur depuis le 22 mars 2024)", text:
+`III. - Le certificat d'aptitude professionnelle "conducteur routier marchandises", prévu par l'arrêté du 21 juin 2007 susvisé, et le baccalauréat professionnel "conducteur transport routier marchandises" institué par l'arrêté du 3 juin 2010 susvisé permettent d'obtenir à compter de 2013, sans nouvel examen, les catégories B, C et CE du permis de conduire.`},
+  a2013_art1_4: {src:"a2013", loc:"Article 1er, IV (version en vigueur depuis le 22 mars 2024)", text:
+`IV. - Toutefois, en cas d'échec à l'obtention des titres précités, les candidats concernés peuvent se voir délivrer un permis de conduire si les trois conditions suivantes sont réunies :
+- avoir atteint l'âge de 17 ans pour la catégorie B du permis de conduire et 18 ans pour les autres catégories ;
+- avoir réussi les épreuves du permis de conduire correspondant à la catégorie visée ;
+- s'être présentés à l'ensemble des épreuves du diplôme.
+Dans ce cas, ils peuvent se voir délivrer une ou plusieurs catégories selon le diplôme présenté :
+[…]
+- CAP "conducteur routier marchandises" ou BAC pro "conducteur transport routier marchandises" : les catégories B et C ;`},
+  etg_val: {src:"a2012", loc:"Article 2, I-B (conditions d’admissibilité)", text:
+`Sont déclarés admissibles les candidats ayant réussi l'épreuve théorique générale.
+L'épreuve théorique générale commune ou motocyclette est déclarée réussie lorsque le candidat obtient un nombre de réponses justes supérieur ou égal à 35 sur un total de quarante questions, numérotées de 1 à 40 pour chaque série.
+Les candidats ayant obtenu un résultat favorable à l'épreuve théorique générale commune aux catégories B1, B, BE, C, D, CE, DE, C1, D1, C1E, D1E conservent le bénéfice de leur admissibilité à la condition qu'un délai maximum de cinq ans ne se soit pas écoulé depuis l'obtention de cette admissibilité.`},
+  med_avis: {src:"a2012m", loc:"Article 4, I (version en vigueur depuis le 1er septembre 2012)", text:
+`I. ― Le formulaire sur lequel est transcrit l'avis médical défini à l'article R. 226-2 du code de la route et délivré à l'issue du contrôle médical a une durée de validité administrative de deux ans.`},
+  med_r22110: {src:"r22110", loc:"I et II (version en vigueur depuis le 4 juin 2025)", text:
+`I.-Les catégories A1, A2, A, B1, B et BE du permis de conduire sont délivrées sans visite médicale préalable sauf dans les cas où cette visite est rendue obligatoire par arrêté du ministre chargé de la sécurité routière pris en application de l'article R. 226-1.
+II.-Les catégories A1, A2, A, B1 et B délivrées pour la conduite des véhicules spécialement aménagés pour tenir compte du handicap du conducteur et les catégories C1, C1E, C, CE, D1, D1E, D et DE ne peuvent être obtenues ou renouvelées qu'à la suite d'un avis médical favorable.`},
+  med_r22111: {src:"r22111", loc:"I (version en vigueur depuis le 27 août 2022)", text:
+`I.-Lorsqu'une visite médicale est obligatoire en vue de la délivrance ou du renouvellement du permis de conduire, celui-ci peut être :
+[…]
+2° Dans les cas prévus aux II, III et IV de l'article R. 221-10, délivré ou prorogé selon la périodicité maximale suivante : cinq ans pour les conducteurs de moins de soixante ans, deux ans à partir de l'âge de soixante ans et un an à partir de l'âge de soixante-seize ans. […]`},
+  med_proro: {src:"a2012m", loc:"Article 4, II (extrait)", text:
+`[…] la ou les catégorie(s) de permis peut (peuvent) être de nouveau prorogée(s) :
+1° Soit pour la périodicité prévue à l'article R. 221-11 du code de la route en fonction de l'âge du conducteur ;
+2° Soit pour la période déterminée à la suite du contrôle médical, en cas de délivrance d'une catégorie de durée de validité limitée ;
+3° Soit jusqu'à la date anniversaire de ses soixante ans pour un conducteur âgé de cinquante-cinq ans ou plus ;
+4° Soit jusqu'à la date anniversaire de ses soixante-seize ans pour un conducteur âgé de soixante-quatorze ans ou plus.`},
+  r3314: {src:"r3314", loc:"Version en vigueur depuis le 3 mai 2021", text:
+`L'obtention de la qualification initiale mentionnée aux articles R. 3314-2 et R. 3314-3 permet à son titulaire, dans les conditions fixées à l'article R. 3314-28, de conduire :
+1° Dès l'âge de 18 ans, les véhicules pour la conduite desquels un permis de conduire des catégories C1, C1E, C ou CE est requis, lorsqu'il s'agit d'une formation de conducteurs de transport de marchandises ; […]`}
+};
+
+const NOTE_2010 = "L’arrêté du 17/01/2013 nomme encore le bac « conducteur transport routier marchandises » de 2010 : il n’a pas été mis à jour pour le bac CRM de 2025. À faire confirmer par l’IEN ou la préfecture.";
+
+/* Cases du diagramme */
+const CARDS = {
+  prereq: {kind:"info", title:"Prérequis à l’entrée", lines:["ASSR 1 et 2 (élèves) · ASR (apprentis &lt; 21 ans)","NEPH créé sur le site de l’ANTS","Visite médicale : avis valable 2 ans (C et CE)"], ref:"E31 I.2 · annexe V · R.221-10",
+    summary:"L’élève doit avoir l’<b>ASSR 1 et 2</b> à l’entrée en formation, et un <b>NEPH</b>. Le C et le CE exigent un <b>avis médical favorable</b>, valable <b>2 ans</b> ; le B n’en exige pas. Le permis C/CE délivré est ensuite valable <b>5 ans</b> avant 60 ans (à partir de 55 ans, prorogation jusqu’aux 60 ans seulement).", ex:["prereq_ref","neph","med_r22110","med_avis","med_r22111","med_proro"], note:"Conseil : un avis pris en seconde aura plus de 2 ans au moment des demandes de permis C/CE. Prévoir une 2e visite en début de terminale."},
+  etg: {kind:"main", title:"1 · ETG Éducation nationale", lines:["2 séries consécutives de 40 questions","Réussite : 35 bonnes réponses minimum","3 présentations maximum","ETG réussie valable 5 ans","<span class='rec'>Recommandé :</span> avant fin avril de seconde"], ref:"E31 I.2.1 · arrêté 20/04/2012",
+    summary:"Chaque présentation = <b>2 séries de 40 questions</b>, meilleur résultat retenu, seuil <b>35</b>. Jusqu’à <b>2 présentations supplémentaires</b>. Le bénéfice de l’ETG est conservé <b>5 ans</b>.", ex:["etg","etg_val"], note:"La durée de 5 ans est fixée par l’arrêté du 20/04/2012 pour l’ETG du ministère de l’Intérieur ; le référentiel ne fixe pas de durée propre à l’ETG EN."},
+  etgfail: {kind:"fail", title:"Échec à l’ETG EN", lines:["Dispense si l’élève a l’ETG du ministère de l’Intérieur (auto-école)","ou un autre permis de moins de 5 ans (sauf AM, A1, A2)"], ref:"E31 I.2.1",
+    summary:"L’ETG du ministère de l’Intérieur, ou un autre permis de moins de 5 ans, <b>dispense</b> de l’ETG EN.", ex:["etg_disp"]},
+  ete: {kind:"info dashed", title:"Hors cursus", lines:["Leçons de conduite B en auto-école l’été"], ref:"Choix de la famille",
+    summary:"Démarche libre, hors du cadre du diplôme.", ex:[], note:"Aucun texte officiel ne prévoit ce cas : c’est une démarche personnelle de la famille."},
+  b: {kind:"main", title:"2 · Permis B — épreuve pratique", lines:["Évaluée par l’inspecteur du permis (ministère de l’Intérieur)","3 passages maximum","<span class='rec'>Recommandé :</span> en seconde, au plus tard le 30 septembre de première"], ref:"E31 I.2.2",
+    summary:"Épreuve évaluée par l’<b>inspecteur</b>, <b>3 passages</b> au maximum. Le délai du 30 septembre de première est <b>fortement recommandé</b>, pas obligatoire.", ex:["b"]},
+  bfail: {kind:"fail", title:"Échec au permis B", lines:["Accompagnement individualisé et conduite professionnelle renforcée","Après 3 passages : redoublement ou réorientation (recommandé)"], ref:"E31 I.2.3",
+    summary:"Le texte prévoit d’abord l’<b>accompagnement</b> et la <b>conduite professionnelle renforcée</b>. Le redoublement ou la réorientation sont « fortement recommandés », selon les places.", ex:["echec"]},
+  ceb: {kind:"opt", title:"Conduite encadrée B (option)", lines:["Dès 16 ans, compétences B validées","RDV préalable ≥ 1 h · attestation du chef d’établissement","Accord écrit de l’assureur · accompagnateur permis B ≥ 5 ans","Signe distinctif · ≥ 1 RDV en cours (≥ 1 h)"], ref:"R.211-5-2 · arrêté 05/01/2023",
+    summary:"Ouverte dès <b>16 ans</b> une fois les compétences B validées. <b>L’ARI n’est pas exigée.</b> Elle s’arrête à la délivrance du permis ou à la fin de la formation.", ex:["r2115","ce_a1","ce_ann1","ce_a2","ce_a4","ce_a5"]},
+  c: {kind:"main", title:"3 · Permis C — HC + CIR", lines:["Évaluées par les enseignants autorisés par le ministère de l’Intérieur","3 présentations HC + 3 présentations CIR maximum","<span class='rec'>Recommandé :</span> validé en classe de première"], ref:"E31 I.2.3",
+    summary:"Pour les élèves, évaluation par les <b>enseignants autorisés</b>. <b>3 présentations</b> par épreuve (HC et CIR).", ex:["c"]},
+  cfail: {kind:"fail", title:"Échec au permis C", lines:["Accompagnement individualisé et conduite professionnelle renforcée","Après 3 présentations : redoublement ou réorientation (recommandé)","Sans B et C : pas d’accès au CE"], ref:"E31 I.2.3 · art. 8",
+    summary:"Mêmes suites que pour le B. Sans <b>ETG + B + C</b>, l’élève ne peut pas se présenter à la 1re partie d’E31.", ex:["echec","art8"]},
+  cec: {kind:"opt", title:"Conduite encadrée C (option)", lines:["Compétences C validées · uniquement pendant les PFMP","Porteur seulement (pas d’ensemble CE)","RDV préalable ≥ 3 h 30, puis RDV ≥ 2 h","Accompagnateur : permis ≥ 5 ans + CQC · panneaux 100 × 30 cm","Carte conducteur · encouragée en terminale"], ref:"R.211-5-2 · arrêté 05/01/2023",
+    summary:"Groupe lourd : <b>uniquement en PFMP</b>. Avec le C seul, <b>pas d’ensemble articulé</b> (art. 4). Carte conducteur possible pour l’élève non salarié.", ex:["r2115","ce_a1","ce_a3","ce_a4","ce_a5","r3313","ce_annexeV"]},
+  ari: {kind:"main", title:"4 · ARI — fin de première", lines:["Délivrée par le recteur sur la moyenne du livret","≥ 10/20, ou de 9 à &lt; 10 après avis du conseil de classe restreint","Coef. 4 spécialité · 1 chef-d’œuvre · 1 autres","<b>Ne valide aucun permis</b>"], ref:"Arrêté 16/12/2020",
+    summary:"L’ARI porte sur la <b>moyenne générale</b> de première. Elle n’a <b>pas de valeur certificative</b> et ne concerne que les élèves sous statut scolaire.", ex:["ari","ns"]},
+  arino: {kind:"fail", title:"ARI non obtenue", lines:["Pas de délivrance anticipée du B et du C","L’élève passe quand même le CE en terminale","B et C délivrés à l’examen"], ref:"Art. 8 · arrêté 17/01/2013",
+    summary:"Le CE reste ouvert : l’article 8 n’exige que <b>ETG + B + C</b>. Seule la délivrance anticipée est perdue.", ex:["art8","a2013_art4"]},
+  arioui: {kind:"ok", title:"Délivrance anticipée", lines:["Attestation annexe I = ARI + compétences B et C validées","B dès 17 ans · C dès 18 ans","Demande au préfet via le téléservice (ANTS)","Avis médical C de moins de 2 ans"], ref:"Arrêté 17/01/2013, art. 3 et 4",
+    summary:"Avec l’attestation de l’<b>annexe I</b> : <b>B dès 17 ans</b>, <b>C dès 18 ans</b>, avant le bac.", ex:["a2013_art4","a2022_ann1","a2022_notice","a2013_art3","med_r22110","med_avis"], note:NOTE_2010},
+  ce: {kind:"main", title:"5 · Permis CE = E31 1re partie (coef. 6)", lines:["Prérequis : ETG + épreuves B et C réussies","HC → C5 · CIR → C6 · en CCF","3 présentations HC + 3 CIR maximum","Commission : enseignant CE extérieur, formateur, professionnel","Validé si ≥ 10/20, sans éliminatoire, maniabilité favorable"], ref:"Art. 8 · E31 I.1, I.3.2",
+    summary:"Note sur 20 de la 1re partie d’E31 (<b>coef. 6</b>). <b>10/20</b> = minimum des grilles du ministère de l’Intérieur.", ex:["art8","ce_contenu","ce_ccf","ce_dossier"]},
+  cefail: {kind:"fail", title:"Échec au CE", lines:["Éliminatoire ou maniabilité défavorable → 0/20","Note &lt; 10/20 → CE non délivré","Le bac reste possible par compensation"], ref:"E31 I.3.2",
+    summary:"Le texte prévoit seulement que le <b>CE n’est pas délivré</b>. Aucune note éliminatoire pour le diplôme.", ex:["ce_echec"]},
+  cursus: {kind:"info", title:"Tout au long du cursus", lines:["Formation ≥ 280 h, dont ≥ 20 h de conduite individuelle C ou CE","Livret de suivi des temps de conduite","Conduite professionnelle renforcée : 20 jours sur 10 semaines de PFMP"], ref:"Art. 7, 8 · annexe V, § 3.1.1",
+    summary:"Exigences de la <b>qualification initiale</b> (directive 2022/2561) et organisation de la <b>conduite professionnelle renforcée</b>.", ex:["art7","art8","cpr"]},
+  o1: {kind:"ok", title:"Bac obtenu + CE ≥ 10/20", lines:["<b>Permis B, C et CE délivrés</b>","18 ans pour C et CE (qualification initiale)","CQC à demander après le diplôme","Avis médical de moins de 2 ans (2e visite)"], ref:"Arrêté 17/01/2013, art. 1-III et 4",
+    summary:"Les trois catégories sont délivrées « sans nouvel examen ».", ex:["a2013_art1_3","ce_echec","a2013_art4","r3314","cqc","med_avis","med_r22111"], note:NOTE_2010},
+  o2: {kind:"ok", title:"Bac obtenu, CE non validé", lines:["<b>Permis B et C délivrés</b>","Permis CE non délivré","Bac obtenu par compensation","Avis médical C de moins de 2 ans"], ref:"E31 I.3.2",
+    summary:"Le CE exige <b>≥ 10/20 en 1re partie d’E31 et le bac</b>. Le B et le C sont acquis.", ex:["ce_echec","a2013_art1_3","med_avis"], note:NOTE_2010},
+  o3: {kind:"fail", title:"Bac non obtenu", lines:["<b>B (17 ans) et C (18 ans)</b> délivrés si épreuves réussies","et présenté à toutes les épreuves du diplôme","Avis médical C de moins de 2 ans","Jamais le CE"], ref:"Arrêté 17/01/2013, art. 1-IV",
+    summary:"Trois conditions cumulatives : <b>âge</b>, <b>épreuves réussies</b>, <b>présence à toutes les épreuves</b>.", ex:["a2013_art1_4","med_r22110","med_avis"], note:NOTE_2010}
+};
+
+const BANDS = [
+  {cls:"pre", label:"Entrée en formation", rows:[{c:"prereq"}]},
+  {cls:"s2", label:"Seconde", rows:[{l:"etgfail", ll:"échec", c:"etg", r:"ete"}, {down:"réussite"}, {l:"bfail", ll:"échec", c:"b", r:"ceb", rl:"validé", rk:"opt"}]},
+  {cls:"s1", label:"Première", rows:[{down:"réussite"},{l:"cfail", ll:"échec", c:"c", r:"cec", rl:"validé", rk:"opt"}, {down:"réussite"}, {l:"arino", ll:"non", c:"ari", r:"arioui", rl:"oui", rk:"ok"}]},
+  {cls:"st", label:"Terminale", rows:[{down:"avec ou sans ARI"},{l:"cefail", ll:"échec", c:"ce", r:"cursus"}]},
+  {cls:"sj", label:"6 · Jury du bac pro CRM — trois issues", outcomes:["o1","o2","o3"]}
+];
+
+function cardHTML(id){
+  const k = CARDS[id];
+  return `<button class="card ${k.kind}" data-id="${id}" id="card-${id}" aria-pressed="false" aria-controls="panel">
+    <span class="t">${k.title}</span>${k.lines.map(l=>`<span class="l">${l}</span>`).join("")}
+    <span class="r"><span>${k.ref}</span><b>Textes ›</b></span></button>`;
+}
+function linkHTML(txt, kind, side){
+  if(!txt) return `<div class="empty" aria-hidden="true"></div>`;
+  const arrow = side==="l" ? "←" : "→";
+  return `<div class="link lk-${side} ${kind}" aria-hidden="true"><i>${arrow}</i>${txt}</div>`;
+}
+function render(){
+  let h = "";
+  for(const b of BANDS){
+    h += `<section class="band ${b.cls}" id="b-${b.cls}" aria-label="${b.label}"><span class="pill">${b.label.toUpperCase()}</span>`;
+    if(b.outcomes){ h += `<div class="outcomes">${b.outcomes.map(cardHTML).join("")}</div>`; }
+    for(const r of (b.rows||[])){
+      if(r.down){ h += `<div class="row"><div></div><div></div><div class="down" style="display:flex"><span>${r.down}</span></div><div></div><div></div></div>`; continue; }
+      h += `<div class="row">
+        <div class="c-left">${r.l?cardHTML(r.l):""}</div>
+        ${r.l?linkHTML(r.ll,"fail","l"):'<div class="empty"></div>'}
+        <div class="c-center">${cardHTML(r.c)}</div>
+        ${r.r?linkHTML(r.rl, r.rk||"", "r"):'<div class="empty"></div>'}
+        <div class="c-right">${r.r?cardHTML(r.r):""}</div></div>`;
+    }
+    h += `</section>`;
+  }
+  document.getElementById("diagram").innerHTML = h;
+}
+
+const panel = document.getElementById("panel"), pb = document.getElementById("pb"), pt = document.getElementById("pt"), pk = document.getElementById("pk");
+function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function showStart(){
+  panel.style.removeProperty("--ph-bg");
+  pk.textContent = "Textes officiels"; pt.textContent = "Choisissez une case";
+  pb.innerHTML = `<div class="start"><p>Chaque case du parcours renvoie au passage exact du référentiel, de l’arrêté ou du code qui la fonde.</p>
+  <p><b>Textes utilisés :</b></p><ul>${Object.values(SRC).map(s=>`<li><a href="${s.url}" target="_blank" rel="noopener">${s.name}</a></li>`).join("")}</ul></div>`;
+}
+function open(id, focusPanel){
+  const k = CARDS[id]; if(!k) return;
+  document.querySelectorAll(".card").forEach(c=>c.setAttribute("aria-pressed", c.dataset.id===id ? "true":"false"));
+  pk.textContent = "Texte officiel"; pt.innerHTML = k.title;
+  const tint = {main:"var(--y1)", fail:"var(--fail-bg)", ok:"var(--ok-bg)", opt:"var(--opt-bg)"}[k.kind.split(" ")[0]] || "var(--ypre)";
+  panel.style.setProperty("--ph-bg", tint);
+  let h = `<div class="summary">${k.summary}</div>`;
+  if(k.note) h += `<div class="note">${k.note}</div>`;
+  k.ex.forEach((xid,i)=>{
+    const x = X[xid], s = SRC[x.src];
+    h += `<section class="src"><div><h3>${s.short}</h3><div class="loc">${x.loc}</div></div>
+      <blockquote id="q-${i}">${esc(x.text)}</blockquote>
+      <div class="acts"><button class="btn" data-copy="${i}" data-x="${xid}">Copier l’extrait</button>
+      <a class="btn" href="${s.url}" target="_blank" rel="noopener">Ouvrir sur Légifrance <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></svg></a></div></section>`;
+  });
+  pb.innerHTML = h;
+  pb.querySelectorAll(".btn[href]").forEach(a=>{ if(SRC.ns.url===a.getAttribute("href")) a.firstChild.textContent = "Ouvrir sur education.gouv.fr "; });
+  panel.classList.remove("closed"); panel.scrollTop = 0;
+  try{ history.replaceState(null,"","#"+id); }catch(e){}
+  if(focusPanel) pt.setAttribute("tabindex","-1"), pt.focus({preventScroll:true});
+}
+function closePanel(){
+  panel.classList.add("closed");
+  document.querySelectorAll(".card").forEach(c=>c.setAttribute("aria-pressed","false"));
+  showStart();
+}
+function toast(msg){ const t=document.createElement("div"); t.className="toast"; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),1800); }
+
+render(); showStart();
+if(window.matchMedia("(min-width:1181px)").matches) panel.classList.remove("closed");
+document.getElementById("diagram").addEventListener("click", e=>{ const c=e.target.closest(".card"); if(c) open(c.dataset.id, !window.matchMedia("(min-width:1181px)").matches); });
+document.getElementById("close").addEventListener("click", closePanel);
+document.addEventListener("keydown", e=>{ if(e.key==="Escape" && !panel.classList.contains("closed") && !window.matchMedia("(min-width:1181px)").matches) closePanel(); });
+pb.addEventListener("click", e=>{
+  const b = e.target.closest("[data-copy]"); if(!b) return;
+  const x = X[b.dataset.x], s = SRC[x.src];
+  const txt = x.text + "\n— " + s.name + ", " + x.loc + " (" + s.url + ")";
+  const done = ()=>toast("Extrait copié");
+  try{ navigator.clipboard.writeText(txt).then(done).catch(()=>selectQ(b.dataset.copy)); }catch(err){ selectQ(b.dataset.copy); }
+});
+function selectQ(i){ const q=document.getElementById("q-"+i); const r=document.createRange(); r.selectNodeContents(q); const s=getSelection(); s.removeAllRanges(); s.addRange(r); toast("Texte sélectionné : copiez-le avec Ctrl+C"); }
+const h0 = (location.hash||"").slice(1); if(CARDS[h0]) open(h0,false);
+</script>
+
+<script>
+/* ===== Module « Suivi élèves » — données enregistrées uniquement sur l'appareil (localStorage) ===== */
+(function(){
+const KEY="parcoursPermis.eleves.v1", KSEL="parcoursPermis.sel", KPIN="parcoursPermis.pin";
+const CLASSES=["2 CRM","1 CRM","T CRM","Sortis"];
+const $=s=>document.querySelector(s);
+const h=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){alert("Enregistrement impossible sur cet appareil.");}}};
+let E=store.get(KEY,[]), sel=store.get(KSEL,null), filt="", q="", view="list", cur=null, unlocked=false;
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist();}catch(e){}
+const save=()=>store.set(KEY,E);
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const fd=d=>d?d.split("-").reverse().join("/"):"";
+const today=()=>new Date().toISOString().slice(0,10);
+function blank(){return {id:uid(),nom:"",prenom:"",classe:"2 CRM",naiss:"",assr:false,neph:"",med:"",etg:[],b:[],ceb:false,cHC:[],cCIR:[],cec:false,ari:"",ceHC:[],ceCIR:[],ceNote:"",issue:"",obs:"",upd:Date.now()};}
+
+/* ---- calcul des statuts ---- */
+function st(a){a=a||[];const ok=a.find(t=>t.r==="R");if(ok)return{s:"ok",d:ok.d,n:a.indexOf(ok)+1};const e=a.filter(t=>t.r==="E").length;return e>=3?{s:"ko",n:e}:e?{s:"cur",n:e}:{s:"",n:0};}
+function both(a,b){const x=st(a),y=st(b);if(x.s==="ok"&&y.s==="ok")return{s:"ok",d:(x.d>y.d?x.d:y.d)};if(x.s==="ko"||y.s==="ko")return{s:"ko"};if(x.s||y.s)return{s:"cur",hc:x,cir:y};return{s:""};}
+function medInfo(e){if(!e.med)return null;const exp=new Date(e.med);exp.setFullYear(exp.getFullYear()+2);const days=Math.round((exp-new Date())/864e5);return{exp:exp.toISOString().slice(0,10),days};}
+function age(e){if(!e.naiss)return null;const n=new Date(e.naiss),t=new Date();let a=t.getFullYear()-n.getFullYear();if(t<new Date(t.getFullYear(),n.getMonth(),n.getDate()))a--;return a;}
+function pre(e){return e.assr&&e.neph&&e.med;}
+function next(e){
+  if(e.issue)return{o1:"Bac obtenu : B, C et CE délivrés",o2:"Bac obtenu : B et C délivrés",o3:"Bac non obtenu"}[e.issue];
+  if(!pre(e))return "Compléter les prérequis (ASSR, NEPH, visite médicale)";
+  const g=st(e.etg);if(g.s!=="ok")return g.s==="ko"?"ETG EN : 3 échecs → dispense possible (ETG MI ou autre permis)":"Valider l’ETG EN (avant fin avril de seconde)";
+  const b=st(e.b);if(b.s!=="ok")return b.s==="ko"?"Permis B : 3 passages → accompagnement / réorientation":"Réussir l’épreuve pratique du permis B";
+  const c=both(e.cHC,e.cCIR);if(c.s!=="ok")return c.s==="ko"?"Permis C : 3 présentations → accompagnement / réorientation":"Réussir le permis C (HC + CIR)";
+  if(!e.ari&&e.classe!=="T CRM")return "ARI en fin de première";
+  const ce=both(e.ceHC,e.ceCIR);if(ce.s!=="ok")return "Permis CE en terminale (HC + CIR, E31 1re partie)";
+  return "Attente du jury du bac";
+}
+function alerts(e){
+  const r=[],m=medInfo(e),a=age(e);
+  if(!e.med)r.push(["o","Visite médicale non renseignée (avis exigé pour C et CE)."]);
+  else if(m.days<0)r.push(["r","Avis médical expiré depuis le "+fd(m.exp)+" (validité 2 ans) : nouvelle visite à prévoir."]);
+  else if(m.days<120)r.push(["o","Avis médical valable jusqu’au "+fd(m.exp)+" : renouvellement à anticiper."]);
+  else r.push(["g","Avis médical valable jusqu’au "+fd(m.exp)+"."]);
+  if(e.ari==="oui"&&a!=null){const b=st(e.b).s==="ok",c=both(e.cHC,e.cCIR).s==="ok";
+    if(b)r.push([a>=17?"g":"o",a>=17?"Délivrance anticipée du B possible (17 ans atteints).":"Délivrance anticipée du B dès 17 ans."]);
+    if(c)r.push([a>=18?"g":"o",a>=18?"Délivrance anticipée du C possible (18 ans atteints).":"Délivrance anticipée du C dès 18 ans."]);}
+  return r;
+}
+
+/* ---- surimpression sur le diagramme ---- */
+function badge(id,cls,txt){const c=document.getElementById("card-"+id);if(!c)return;c.classList.add("sv-"+cls);c.insertAdjacentHTML("beforeend",`<span class="sv-badge ${cls==="ok"?"":cls}">${txt}</span>`);}
+function overlay(){
+  document.querySelectorAll(".card").forEach(c=>{c.classList.remove("sv-ok","sv-cur","sv-ko","sv-dim");c.querySelectorAll(".sv-badge").forEach(b=>b.remove());});
+  const e=E.find(x=>x.id===sel);
+  const chip=$("#sv-chip"),nx=$("#sv-next");
+  if(!e){chip.style.display="none";nx.innerHTML="Sélectionnez un élève pour voir où il en est sur le parcours.";return;}
+  chip.style.display="flex";$("#sv-chipname").textContent=e.prenom+" "+e.nom+" · "+e.classe;
+  nx.innerHTML="Prochaine étape : <b>"+h(next(e))+"</b>";
+  const m=medInfo(e);
+  if(pre(e))badge("prereq",m&&m.days<0?"cur":"ok",m&&m.days<0?"Avis médical expiré":"✓ Prérequis");else badge("prereq","cur","À compléter");
+  const T=(id,fid,s,lab)=>{if(s.s==="ok")badge(id,"ok","✓ "+(s.d?fd(s.d):lab));else if(s.s==="cur"){badge(id,"cur",(s.n?("Échec "+s.n+"/3"):"En cours"));}else if(s.s==="ko"){badge(id,"ko","3 échecs");badge(fid,"ko","Situation actuelle");}};
+  T("etg","etgfail",st(e.etg),"ETG");T("b","bfail",st(e.b),"B");T("c","cfail",both(e.cHC,e.cCIR),"C");
+  if(e.ceb)badge("ceb","ok","✓ En place");if(e.cec)badge("cec","ok","✓ En place");
+  if(e.ari==="oui"){badge("ari","ok","✓ Obtenue");badge("arioui","ok","Concerné");}
+  if(e.ari==="non"){badge("ari","ko","Non obtenue");badge("arino","cur","Concerné");}
+  const ce=both(e.ceHC,e.ceCIR);T("ce","cefail",ce,"CE");
+  if(e.ceNote!==""&&Number(e.ceNote)<10)badge("cefail","ko","Note "+e.ceNote+"/20");
+  if(e.issue){["o1","o2","o3"].forEach(o=>{const c=document.getElementById("card-"+o);if(c&&o!==e.issue)c.classList.add("sv-dim");});badge(e.issue,e.issue==="o3"?"ko":"ok","Issue de l’élève");}
+}
+
+/* ---- liste ---- */
+function pz(s,txt){return `<span class="pz ${s.s||""}">${s.s==="ok"?"✓":s.s==="ko"?"✗✗✗":s.s==="cur"?(s.n?s.n+"✗":"…"):(txt||"–")}</span>`;}
+function list(){
+  let L=E.filter(e=>(!filt||e.classe===filt)&&(!q||(e.nom+" "+e.prenom).toLowerCase().includes(q.toLowerCase())));
+  L.sort((a,b)=>CLASSES.indexOf(a.classe)-CLASSES.indexOf(b.classe)||a.nom.localeCompare(b.nom,"fr"));
+  if(!L.length)return `<div class="sv-empty">${E.length?"Aucun élève pour ce filtre.":"Aucun élève enregistré.<br>Ajoutez vos élèves avec « + Élève », ou importez une sauvegarde."}</div>`;
+  return `<table class="sv-tbl"><thead><tr><th>Élève</th><th>Classe</th><th>Prérequis</th><th>ETG</th><th>B</th><th>C</th><th>ARI</th><th>CE</th><th class="hm">Issue</th><th class="hm">Prochaine étape</th></tr></thead><tbody>${L.map(e=>{
+    const m=medInfo(e);const p={s:pre(e)?(m&&m.days<0?"cur":"ok"):""};
+    const ari={s:e.ari==="oui"?"ok":e.ari==="non"?"ko":""};
+    return `<tr data-id="${e.id}"><td><b>${h(e.nom.toUpperCase())}</b> ${h(e.prenom)}</td><td>${h(e.classe)}</td><td>${pz(p)}</td><td>${pz(st(e.etg))}</td><td>${pz(st(e.b))}</td><td>${pz(both(e.cHC,e.cCIR))}</td><td>${e.ari==="non"?'<span class="pz ko">non</span>':pz(ari)}</td><td>${pz(both(e.ceHC,e.ceCIR))}</td><td class="hm">${e.issue?'<span class="pz '+(e.issue==="o3"?"ko":"ok")+'">'+{o1:"B C CE",o2:"B C",o3:"sans bac"}[e.issue]+"</span>":"–"}</td><td class="hm" style="text-align:left;font-size:13px">${h(next(e))}</td></tr>`;}).join("")}</tbody></table>`;
+}
+
+/* ---- fiche ---- */
+function tries(key,label){const a=cur[key]||[];const okIdx=a.findIndex(t=>t.r==="R");let o="";
+  for(let i=0;i<3;i++){if(okIdx>-1&&i>okIdx)break;const t=a[i]||{d:"",r:""};
+    o+=`<div class="sv-try ${t.r}"><div class="n">${label} ${i+1}/3</div><input type="date" data-try="${key}" data-i="${i}" data-k="d" value="${h(t.d)}"><select data-try="${key}" data-i="${i}" data-k="r"><option value="">— résultat —</option><option value="R" ${t.r==="R"?"selected":""}>Réussi</option><option value="E" ${t.r==="E"?"selected":""}>Échec</option></select></div>`;}
+  return `<div class="sv-tries">${o}</div>`;}
+function f(k,lab,type,opts){const v=cur[k];
+  if(type==="select")return `<div class="sv-f"><label>${lab}</label><select data-f="${k}">${opts.map(o=>`<option value="${h(o[0])}" ${v===o[0]?"selected":""}>${o[1]}</option>`).join("")}</select></div>`;
+  if(type==="area")return `<div class="sv-f" style="grid-column:1/-1"><label>${lab}</label><textarea data-f="${k}">${h(v)}</textarea></div>`;
+  return `<div class="sv-f"><label>${lab}</label><input type="${type||"text"}" data-f="${k}" value="${h(v)}"${type==="number"?' min="0" max="20" step="0.5"':""}></div>`;}
+function chk(k,lab){return `<label class="sv-chk"><input type="checkbox" data-f="${k}" ${cur[k]?"checked":""}> ${lab}</label>`;}
+function fiche(){const e=cur;
+  return `<div class="sv-fiche">
+  <div class="sv-sec"><h3>Élève</h3><div class="sv-grid">${f("nom","Nom")}${f("prenom","Prénom")}${f("classe","Classe","select",CLASSES.map(c=>[c,c]))}${f("naiss","Date de naissance (âge pour B 17 ans / C 18 ans)","date")}</div></div>
+  <div class="sv-sec"><h3>0 · Prérequis à l’entrée</h3><div class="sv-grid">${chk("assr","ASSR 1 et 2 (ou ASR)")}${f("neph","N° NEPH")}${f("med","Date de la visite médicale (avis C/CE)","date")}</div>${alerts(e).map(a=>`<div class="sv-alert ${a[0]}">${a[1]}</div>`).join("")}</div>
+  <div class="sv-sec"><h3>1 · ETG Éducation nationale ${pz(st(e.etg))}</h3>${tries("etg","Présentation")}</div>
+  <div class="sv-sec"><h3>2 · Permis B ${pz(st(e.b))}</h3>${tries("b","Passage")}<div style="margin-top:8px">${chk("ceb","Conduite encadrée B en place (option)")}</div></div>
+  <div class="sv-sec"><h3>3 · Permis C ${pz(both(e.cHC,e.cCIR))}</h3><div class="sv-sub">Hors circulation (HC)</div>${tries("cHC","HC")}<div class="sv-sub">Circulation (CIR)</div>${tries("cCIR","CIR")}<div style="margin-top:8px">${chk("cec","Conduite encadrée C en place (PFMP, option)")}</div></div>
+  <div class="sv-sec"><h3>4 · ARI — fin de première</h3><div class="sv-grid">${f("ari","Attestation de réussite intermédiaire","select",[["","Non encore délivrée"],["oui","Obtenue"],["non","Non obtenue"]])}</div></div>
+  <div class="sv-sec"><h3>5 · Permis CE — E31 1re partie ${pz(both(e.ceHC,e.ceCIR))}</h3><div class="sv-sub">Hors circulation (HC → C5)</div>${tries("ceHC","HC")}<div class="sv-sub">Circulation (CIR → C6)</div>${tries("ceCIR","CIR")}<div class="sv-grid" style="margin-top:8px">${f("ceNote","Note E31 1re partie (/20)","number")}</div></div>
+  <div class="sv-sec"><h3>6 · Jury du bac pro CRM</h3><div class="sv-grid">${f("issue","Issue","select",[["","En attente"],["o1","Bac obtenu + CE ≥ 10/20 : B, C, CE délivrés"],["o2","Bac obtenu, CE non validé : B et C délivrés"],["o3","Bac non obtenu"]])}${f("obs","Observations","area")}</div></div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="sv-btn pri" id="sv-see">Voir sur le parcours</button><button class="sv-btn" id="sv-back2">← Liste des élèves</button><span class="sv-sp"></span><button class="sv-btn warn" id="sv-del">Supprimer l’élève</button></div>
+  </div>`;}
+
+/* ---- rendu ---- */
+function draw(){
+  $("#sv-title").textContent=view==="list"?"Suivi des élèves — parcours permis":(cur.prenom||cur.nom?cur.prenom+" "+cur.nom:"Nouvel élève");
+  $("#sv-tools").style.display=view==="list"?"flex":"none";
+  $("#sv-back").style.display=view==="list"?"none":"";
+  $("#sv-body").innerHTML=view==="list"?list():fiche();
+  $("#sv-body").scrollTop=0;
+}
+function upd(){cur.upd=Date.now();save();}
+function openSv(){const pin=store.get(KPIN,"");if(pin&&!unlocked){askPin("Code du suivi",v=>{if(v===pin){unlocked=true;openSv();}else alert("Code incorrect.");});return;}
+  $("#sv").classList.add("open");view="list";draw();}
+function closeSv(){$("#sv").classList.remove("open");overlay();}
+function askPin(title,cb){const m=document.createElement("div");m.className="sv-modal";m.innerHTML=`<div class="box"><h4>${title}</h4><input type="password" inputmode="numeric" maxlength="8" autocomplete="off"><div style="display:flex;gap:8px;justify-content:flex-end"><button class="sv-btn" data-x>Annuler</button><button class="sv-btn pri" data-ok>Valider</button></div></div>`;document.body.appendChild(m);const i=m.querySelector("input");i.focus();
+  const done=v=>{m.remove();if(v!=null)cb(v);};m.querySelector("[data-x]").onclick=()=>done(null);m.querySelector("[data-ok]").onclick=()=>done(i.value.trim());i.onkeydown=ev=>{if(ev.key==="Enter")done(i.value.trim());};}
+function dl(name,txt,type){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);}
+function csv(){const H=["Nom","Prénom","Classe","Naissance","ASSR","NEPH","Visite médicale","ETG","B","Conduite encadrée B","C HC","C CIR","Conduite encadrée C","ARI","CE HC","CE CIR","Note E31-1","Issue","Prochaine étape","Observations"];
+  const T=a=>(a||[]).filter(t=>t.r).map(t=>(t.r==="R"?"R ":"E ")+fd(t.d)).join(" | ");
+  const rows=E.map(e=>[e.nom,e.prenom,e.classe,fd(e.naiss),e.assr?"oui":"non",e.neph,fd(e.med),T(e.etg),T(e.b),e.ceb?"oui":"",T(e.cHC),T(e.cCIR),e.cec?"oui":"",e.ari,T(e.ceHC),T(e.ceCIR),e.ceNote,{o1:"B C CE délivrés",o2:"B C délivrés",o3:"Bac non obtenu"}[e.issue]||"",next(e),e.obs]);
+  return "﻿"+[H,...rows].map(r=>r.map(v=>'"'+String(v==null?"":v).replace(/"/g,'""')+'"').join(";")).join("\r\n");}
+
+/* ---- construction de l'interface ---- */
+document.querySelector("header.top").insertAdjacentHTML("afterend",`<div class="sv-bar">
+  <button class="sv-btn pri" id="sv-open">👥 Suivi élèves</button>
+  <div class="sv-chip" id="sv-chip" style="display:none"><span id="sv-chipname"></span><button id="sv-unsel" aria-label="Retirer l’élève du parcours">✕</button></div>
+  <span class="sv-next" id="sv-next"></span><span class="sv-sp"></span>
+  <button class="sv-btn" id="sv-install" style="display:none">⬇ Installer l’appli</button></div>`);
+document.body.insertAdjacentHTML("beforeend",`<div id="sv" role="dialog" aria-modal="true" aria-labelledby="sv-title">
+  <div class="sv-h"><button class="sv-btn" id="sv-back">← Liste</button><h2 id="sv-title"></h2><span class="sv-sp"></span><button class="sv-btn" id="sv-close">Fermer ✕</button></div>
+  <div class="sv-tools" id="sv-tools">
+    <select id="sv-filt" aria-label="Classe"><option value="">Toutes les classes</option>${CLASSES.map(c=>`<option>${c}</option>`).join("")}</select>
+    <input id="sv-q" type="search" placeholder="Rechercher un élève" aria-label="Rechercher">
+    <button class="sv-btn pri" id="sv-add">+ Élève</button><span class="sv-sp"></span>
+    <button class="sv-btn" id="sv-exp">💾 Sauvegarder</button>
+    <button class="sv-btn" id="sv-imp">📂 Importer</button>
+    <button class="sv-btn" id="sv-csv">📊 Export Excel</button>
+    <button class="sv-btn" id="sv-year">⏭ Passage de classe</button>
+    <button class="sv-btn" id="sv-pin">🔒 Code</button>
+    <input type="file" id="sv-file" accept=".json,application/json" hidden></div>
+  <div class="sv-body" id="sv-body"></div>
+  <div class="sv-foot">Données enregistrées uniquement sur cet appareil (rien n’est envoyé sur Internet). Faites « Sauvegarder » régulièrement et rangez le fichier dans Nextcloud ; « Importer » permet de reprendre le suivi sur une autre tablette.</div></div>`);
+
+$("#sv-open").onclick=openSv;$("#sv-close").onclick=closeSv;
+$("#sv-back").onclick=()=>{view="list";draw();};
+$("#sv-unsel").onclick=()=>{sel=null;store.set(KSEL,null);overlay();};
+$("#sv-filt").onchange=ev=>{filt=ev.target.value;draw();};
+$("#sv-q").oninput=ev=>{q=ev.target.value;draw();};
+$("#sv-add").onclick=()=>{cur=blank();if(filt&&filt!=="Sortis")cur.classe=filt;E.push(cur);save();view="fiche";draw();};
+$("#sv-exp").onclick=()=>dl("suivi-parcours-permis-"+today()+".json",JSON.stringify({app:"parcours-permis-crm",v:1,date:new Date().toISOString(),eleves:E},null,1),"application/json");
+$("#sv-csv").onclick=()=>dl("suivi-parcours-permis-"+today()+".csv",csv(),"text/csv;charset=utf-8");
+$("#sv-imp").onclick=()=>$("#sv-file").click();
+$("#sv-file").onchange=ev=>{const file=ev.target.files[0];if(!file)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);const L=Array.isArray(d)?d:d.eleves;if(!Array.isArray(L))throw 0;let n=0,m=0;
+  L.forEach(x=>{if(!x||!x.id)return;const i=E.findIndex(e=>e.id===x.id);if(i<0){E.push(Object.assign(blank(),x));n++;}else if((x.upd||0)>(E[i].upd||0)){E[i]=Object.assign(blank(),x);m++;}});
+  save();draw();alert("Import terminé : "+n+" élève(s) ajouté(s), "+m+" mis à jour (la version la plus récente est gardée).");}catch(e){alert("Fichier non reconnu.");}ev.target.value="";};r.readAsText(file);};
+$("#sv-year").onclick=()=>{if(!E.length)return;if(!confirm("Passer tous les élèves dans la classe supérieure ?\n2 CRM → 1 CRM → T CRM → Sortis\n\nConseil : faites d’abord une sauvegarde."))return;
+  E.forEach(e=>{const i=CLASSES.indexOf(e.classe);if(i>-1&&i<3){e.classe=CLASSES[i+1];e.upd=Date.now();}});save();draw();};
+$("#sv-pin").onclick=()=>askPin("Nouveau code (vide = pas de code)",v=>{store.set(KPIN,v);unlocked=true;alert(v?"Code enregistré : il sera demandé à l’ouverture du suivi.":"Code supprimé.");});
+$("#sv-body").addEventListener("click",ev=>{
+  const tr=ev.target.closest("tr[data-id]");if(tr){cur=E.find(e=>e.id===tr.dataset.id);view="fiche";draw();return;}
+  if(ev.target.id==="sv-back2"){view="list";draw();}
+  if(ev.target.id==="sv-see"){sel=cur.id;store.set(KSEL,sel);closeSv();scrollTo({top:0,behavior:"smooth"});}
+  if(ev.target.id==="sv-del"&&confirm("Supprimer définitivement "+(cur.prenom+" "+cur.nom).trim()+" ?")){E=E.filter(e=>e!==cur);if(sel===cur.id){sel=null;store.set(KSEL,null);}save();view="list";draw();}
+});
+$("#sv-body").addEventListener("change",ev=>{const t=ev.target;if(!cur)return;
+  if(t.dataset.f){cur[t.dataset.f]=t.type==="checkbox"?t.checked:t.value;upd();if(["med","naiss","ari","classe","ceNote","issue"].includes(t.dataset.f)){const y=$("#sv-body").scrollTop;draw();$("#sv-body").scrollTop=y;}else $("#sv-title").textContent=(cur.prenom+" "+cur.nom).trim()||"Nouvel élève";}
+  if(t.dataset.try){const a=cur[t.dataset.try]=cur[t.dataset.try]||[];const i=+t.dataset.i;while(a.length<=i)a.push({d:"",r:""});a[i][t.dataset.k]=t.value;
+    if(t.dataset.k==="r"&&t.value&&!a[i].d)a[i].d=today();
+    while(a.length&&!a[a.length-1].d&&!a[a.length-1].r)a.pop();upd();const y=$("#sv-body").scrollTop;draw();$("#sv-body").scrollTop=y;}
+});
+document.addEventListener("keydown",ev=>{if(ev.key==="Escape"&&$("#sv").classList.contains("open"))closeSv();});
+
+/* installation PWA */
+let dp=null;addEventListener("beforeinstallprompt",ev=>{ev.preventDefault();dp=ev;$("#sv-install").style.display="";});
+$("#sv-install").onclick=async()=>{if(!dp)return;dp.prompt();await dp.userChoice;dp=null;$("#sv-install").style.display="none";};
+addEventListener("appinstalled",()=>{$("#sv-install").style.display="none";});
+if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+overlay();
+})();
+</script>
+</body></html>
