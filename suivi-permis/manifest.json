@@ -2,7 +2,7 @@
   "name": "Suivi Permis — Bac Pro CRM",
   "short_name": "Suivi Permis",
   "description": "Suivi des permis et habilitations des élèves de Bac Pro CRM – Lycée du Val Moré",
-  "id": "./",
+  "id": "/classe-ecrans/suivi-permis/",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
