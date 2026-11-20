@@ -1,0 +1,39 @@
+{
+  "name": "Espace pédagogique — Bac Pro CRM",
+  "short_name": "Espace CRM",
+  "description": "Cours et ressources du Bac Pro CRM – Lycée du Val Moré",
+  "id": "/classe-ecrans/espace-pedagogique/",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1F4E8C",
+  "theme_color": "#1F4E8C",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
