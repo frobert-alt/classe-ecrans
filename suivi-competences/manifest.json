@@ -1,0 +1,19 @@
+{
+  "name": "Suivi des compétences — Bac Pro CRM",
+  "short_name": "Compétences CRM",
+  "description": "Suivi des compétences et critères d'évaluation du Bac Pro CRM sur 3 ans (CCF continu, imports PRONOTE) – Lycée du Val Moré",
+  "id": "/classe-ecrans/suivi-competences/",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0B3B3C",
+  "theme_color": "#0B3B3C",
+  "lang": "fr",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable"},
+    {"src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
