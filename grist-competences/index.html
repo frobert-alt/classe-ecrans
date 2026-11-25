@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Suivi des compétences CRM</title>
+<meta name="theme-color" content="#0F5557">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Compétences">
+<style>
+html,body{margin:0;min-height:100%;background:#0F5557;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.c{max-width:440px;margin:8vh auto;background:#fff;border-radius:18px;padding:26px;box-shadow:0 10px 40px rgba(0,0,0,.35);text-align:center}
+img{width:96px;height:96px;border-radius:20px}h1{font-size:1.3rem;margin:10px 0 2px;color:#1a2a3a}p{color:#555;font-size:.9rem}
+a.b,button{display:block;width:100%;box-sizing:border-box;border:0;border-radius:12px;padding:14px;font-size:1.05rem;font-weight:700;margin-top:12px;cursor:pointer;text-decoration:none}
+a.b{background:#0F5557;color:#fff}button{background:#fff;color:#0F5557;border:2px solid #0F5557}
+ol{text-align:left;font-size:.9rem;color:#333;padding-left:20px}small{color:#888}
+</style></head><body>
+<div class="c">
+<img src="icon-192.png" alt="">
+<h1>Suivi des compétences CRM</h1>
+<p>Pôle routier — Lycée professionnel du Val Moré</p>
+<a class="b" id="go" href="https://grist.numerique.gouv.fr/o/docs/5z8DXpcrS839/Pole-routier-conduite/p/3?style=singlePage">Ouvrir l’appli</a>
+<button id="inst" hidden>📲 Installer sur cet appareil</button>
+<ol>
+<li><b>Android / ordinateur (Chrome)</b> : ⋮ › <b>Installer l’application</b> (ou « Ajouter à l’écran d’accueil »).</li>
+<li><b>iPad / iPhone (Safari)</b> : Partager › <b>Sur l’écran d’accueil</b>.</li>
+</ol>
+<small>Connexion avec votre compte apps.education.fr. Accès réservé aux enseignants invités dans le document Grist.</small>
+</div>
+<script>
+var U="https://grist.numerique.gouv.fr/o/docs/5z8DXpcrS839/Pole-routier-conduite/p/3?style=singlePage";
+var standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone||/[?&]app=1/.test(location.search);
+if(standalone) location.replace(U);
+if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(function(){});
+var dp=null;addEventListener("beforeinstallprompt",function(e){e.preventDefault();dp=e;var b=document.getElementById("inst");b.hidden=false;b.onclick=function(){dp.prompt();};});
+</script>
+</body></html>
